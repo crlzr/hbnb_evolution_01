@@ -11,16 +11,21 @@ def hello_world():
     """ Hello world """
     return 'Hello World'
 
-@app.route('/cities')
-def cities():
-    """ Prints out all cities data """
+@app.route('/cities_example')
+def cities_example():
+    """ Creates some City data for testing purposes """
 
-    # Load some data here for testing purposes
     # Note that we are appending dictionaries instead of City objects
     cities_list = []
     cities_list.append(City(name="Gotham").__dict__)
     cities_list.append(City(name="Metropolis", country_id=1).__dict__)
-    cities_list.append(City(country_id=2).__dict__)
+
+    # The city with the invalid name is not appended to cities_list
+    try:
+        cities_list.append(City(name="#$%^&**", country_id=2).__dict__)
+    except ValueError as exc:
+        # This is printed internally in the server output. Not shown on website.
+        print("City creation Error - ", exc)
 
     return cities_list
 
