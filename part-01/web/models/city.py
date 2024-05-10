@@ -8,12 +8,6 @@ import re
 class City():
     """Representation of city """
 
-    id = 0
-    created_at = ""
-    updated_at = ""
-    __name = ""
-    __country_id = 0
-
     def __init__(self, *args, **kwargs):
         """ constructor """
         # super().__init__(*args, **kwargs)
