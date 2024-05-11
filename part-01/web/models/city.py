@@ -1,10 +1,8 @@
 #!/usr/bin/python
 
-from datetime import datetime, timezone
+from datetime import datetime
 import uuid
 import re
-from app import city_data
-# from models.country import Country
 
 class City():
     """Representation of city """
@@ -13,17 +11,15 @@ class City():
         """ constructor """
         # super().__init__(*args, **kwargs)
 
-        print(city_data)
-
         # defaults
         self.id = str(uuid.uuid4())
         self.created_at = datetime.now().timestamp()
         self.updated_at = self.created_at
         self.__name = ""
-        self.__country_id = 0
+        self.__country_id = ""
 
         # Only allow country_id, name.
-        # Note that I'm calling the setters for these 2 attribs
+        # Note that setattr will call the setters for these 2 attribs
         if kwargs:
             for key, value in kwargs.items():
                 if key == "country_id" or key == "name":
@@ -53,7 +49,10 @@ class City():
     @country_id.setter
     def country_id(self, value):
         """Setter for private prop country_id"""
+        from app import country_data
 
-        # TODO: ensure that the specified country actually exists before setting
-
-        self.__country_id = value
+        # ensure that the specified country id actually exists before setting
+        if country_data.get(value) is not None:
+            self.__country_id = value
+        else:
+            raise ValueError("Invalid country_id specified: {}".format(value))
