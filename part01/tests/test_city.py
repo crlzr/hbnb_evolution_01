@@ -3,6 +3,7 @@
 
 # from io import StringIO
 # import sys
+import os
 import unittest
 from models.city import City
 import data as data
@@ -14,28 +15,15 @@ class TestCity(unittest.TestCase):
     def test_create_city(self):
         """Tests creation of City instances
         """
-        # override whatever it is that was loaded in data model jsut for this test
-        data.country_data = {
-            "id": "d291a77f-fa95-4385-b70e-2691df246475",
-            "name": "Canada",
-            "created_at": 1715579247.890417,
-            "updated_at": 1715579247.890417
-        }
+        # Note that this test only works if the test country data is loaded
+        # don't forget to include the TESTING = 1 flag at the command line
+        # TESTING=1 python3 -m unittest discover
+        c = City(name="Vancouver", country_id="d291a77f-fa95-4385-b70e-2691df246475")
 
-    #     c = City(name="Vancouver", country_id="d291a77f-fa95-4385-b70e-2691df246475")
+        self.assertIsNotNone(c)
 
-    #     self.assertIsNotNone(c)
+    # TODO: add more tests
 
-    # def test_swim_output(self):
-    #     """Tests that the swim mixin works as expected
-    #     """
-    #     draco = Dragon()
-
-    #     capturedOutput = StringIO()     # Create StringIO object
-    #     sys.stdout = capturedOutput     # and redirect stdout.
-    #     draco.swim()                    # Call unchanged function.
-    #     sys.stdout = sys.__stdout__     # Reset redirect.
-    #     self.assertEqual(capturedOutput.getvalue(), "The creature swims!\n")
 
 if __name__ == '__main__':
     unittest.main()

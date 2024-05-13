@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 import json
 from pathlib import Path
@@ -19,8 +19,8 @@ class FileStorage():
                 rows = json.load(f)
             for key in rows:
                 data[key] = rows[key]
-        except:
-            raise ValueError("Unable to load data from file '{}'".format(filename))
+        except ValueError as exc:
+            raise ValueError("Unable to load data from file '{}'".format(filename)) from exc
 
         # The data at this point is not directly usable. It needs to be cleaned up
         data = self.reorganise_model_data(data)
@@ -59,8 +59,8 @@ class FileStorage():
                 rows = json.load(f)
             for key in rows:
                 data[key] = rows[key]
-        except:
-            raise ValueError("Unable to load data from file '{}'".format(filename))
+        except ValueError as exc:
+            raise ValueError("Unable to load data from file '{}'".format(filename)) from exc
 
         for key in data:
             # key's value is 'Place_to_Amenity'
