@@ -2,7 +2,7 @@
 
 from flask import Flask, jsonify
 from models.city import City
-from data import country_data, place_data, amenity_data, place_to_amenity_data
+from data import country_data, place_data, amenity_data, place_to_amenity_data, review_data, user_data
 
 app = Flask(__name__)
 
@@ -69,6 +69,34 @@ def places_amenties_prettified_example():
             output[place_name].append(amenity_name)
 
     return jsonify(output)
+
+@app.route('/places_reviews_example')
+def places_reviews_example():
+    """ prints out reviews of places """
+
+    output = {}
+
+    for key in review_data:
+        row = review_data[key]
+        place_id = row['place_id']
+        place_name = place_data[place_id]['name']
+        if place_name not in output:
+            output[place_name] = []
+        
+        reviewer = user_data[row['commentor_user_id']]
+
+        output[place_name].append({
+            "review": row['feedback'],
+            "rating": str(row['rating'] * 5) + " / 5",
+            "reviewer": reviewer['first_name'] + " " + reviewer['last_name']
+        })
+
+    return jsonify(output)
+
+# Consider adding other routes to display data for:
+# - the places within the countries
+# - which places are owned by which users
+# - names of the owners of places with toilets
 
 # Set debug=True for the server to auto-reload when there are changes
 if __name__ == '__main__':
