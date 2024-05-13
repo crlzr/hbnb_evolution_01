@@ -2,7 +2,7 @@
 
 from flask import Flask, jsonify
 from models.city import City
-from data import country_data
+from data import country_data, place_data, amenity_data, place_to_amenity_data
 
 app = Flask(__name__)
 
@@ -47,6 +47,28 @@ def cities_example():
 
     return cities_list
 
+@app.route('/places_amenties_raw_example')
+def places_amenities_raw_example():
+    """ Prints out the raw data for relationships between places and their amenities """
+    return jsonify(place_to_amenity_data)
+
+@app.route('/places_amenties_prettified_example')
+def places_amenties_prettified_example():
+    """ Prints out the relationships between places and their amenities using names """
+
+    output = {}
+
+    for place_key in place_to_amenity_data:
+        place_name = place_data[place_key]['name']
+        if place_name not in output:
+            output[place_name] = []
+
+        amenities_ids = place_to_amenity_data[place_key]
+        for amenity_key in amenities_ids:
+            amenity_name = amenity_data[amenity_key]['name']
+            output[place_name].append(amenity_name)
+
+    return jsonify(output)
 
 # Set debug=True for the server to auto-reload when there are changes
 if __name__ == '__main__':
