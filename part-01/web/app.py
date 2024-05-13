@@ -2,16 +2,9 @@
 
 from flask import Flask, jsonify
 from models.city import City
-from data.file_storage import FileStorage
-import json
-
-# We should load the data for all the Models early
-storage = FileStorage()
-country_data = storage.load_from_json_file('data/country.json')
-city_data = storage.load_from_json_file('data/city.json')
+from data import country_data
 
 app = Flask(__name__)
-
 
 @app.route('/')
 def hello_world():
@@ -20,12 +13,12 @@ def hello_world():
 
 @app.route('/storage_example')
 def storage_example():
-    """ Example to show that we can view data loaded above """
+    """ Example to show that we can view data loaded in the data module's init """
     return jsonify(country_data)
 
 @app.route('/cities_example')
 def cities_example():
-    """ Example route to show what to put in the City model """
+    """ Example route to showing usage of the City model class """
 
     # We will be appending dictionaries to the list instead of City objects
     # This is so we can print them out on the webpage
@@ -48,6 +41,9 @@ def cities_example():
         cities_list.append(City(name="Duckburg", country_id=1234).__dict__)
     except ValueError as exc:
         print("City creation Error - ", exc)
+
+    # Note that private attributes have a weird key format. e.g. "_City__country_id"
+    # This shows that the output of the City object's built-in __dict__ is not usable as-is
 
     return cities_list
 

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import json
+from pathlib import Path
 
 class FileStorage():
     """ Class for reading from files """
@@ -9,13 +10,17 @@ class FileStorage():
         """ Load JSON data from file and returns as dictionary """
 
         data = {}
+
+        if not Path(filename).is_file():
+            raise FileNotFoundError("Data file '{}' missing".format(filename))
+
         try:
             with open(filename, 'r') as f:
                 rows = json.load(f)
             for key in rows:
                 data[key] = rows[key]
-        except:
-            raise ValueError("Something happened")
+        except ValueError as exc:
+            raise ValueError("Unable to load data from file '{}'".format(filename)) from exc
 
         # The data at this point is not directly usable. It needs to be cleaned up
         data = self.reorganise_data(data)

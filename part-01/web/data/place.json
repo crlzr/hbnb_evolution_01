@@ -1,0 +1,52 @@
+{
+    "Place": [
+        {
+            "id": "90c83333-35d4-4638-bdd8-1eceac56915e",
+            "host_user_id": "0215a722-a3fc-4f08-9120-f8621147f2be",
+            "city_id": "04051500-051f-4e0f-97ba-e452cbb14d19",
+            "name": "Ringwood Hotel",
+            "description": "",
+            "address": "",
+            "latitude": "",
+            "longitude": "",
+            "number_of_rooms": 5,
+            "bathrooms": 1,
+            "price_per_night": 150.00,
+            "max_guests": 2,
+            "created_at": 1715566897.190475,
+            "updated_at": 1715566897.190475
+        },
+        {
+            "id": "cee845de-c341-4f5a-a0c5-2ca1f4c327b2",
+            "host_user_id": "460897e2-5953-40ea-8773-00a2851a1ba8",
+            "city_id": "04051500-051f-4e0f-97ba-e452cbb14d19",
+            "name": "Blackburn Hotel",
+            "description": "",
+            "address": "",
+            "latitude": "",
+            "longitude": "",
+            "number_of_rooms": 20,
+            "bathrooms": 0,
+            "price_per_night": 120.00,
+            "max_guests": 1,
+            "created_at": 1715566897.190596,
+            "updated_at": 1715566897.190596
+        },
+        {
+            "id": "a1a3d915-68c8-4771-9bf4-498b9ae62463",
+            "host_user_id": "0215a722-a3fc-4f08-9120-f8621147f2be",
+            "city": "04051500-051f-4e0f-97ba-e452cbb14d19",
+            "name": "Box Hill Motel",
+            "description": "",
+            "address": "",
+            "latitude": "",
+            "longitude": "",
+            "number_of_rooms": 18,
+            "bathrooms": 2,
+            "price_per_night": 200.00,
+            "max_guests": 3,
+            "created_at": 1715566923.500334,
+            "updated_at": 1715566923.500334
+        }
+    ]
+}

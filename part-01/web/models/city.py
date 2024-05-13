@@ -3,6 +3,7 @@
 from datetime import datetime
 import uuid
 import re
+from data import country_data
 
 class City():
     """Representation of city """
@@ -49,7 +50,6 @@ class City():
     @country_id.setter
     def country_id(self, value):
         """Setter for private prop country_id"""
-        from app import country_data
 
         # ensure that the specified country id actually exists before setting
         if country_data.get(value) is not None:
