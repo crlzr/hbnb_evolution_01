@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
-from flask import Flask, jsonify
+from datetime import datetime
+from flask import Flask, jsonify, request, abort
 from models.city import City
+from models.user import User
 from data import country_data, place_data, amenity_data, place_to_amenity_data, review_data, user_data
 
 app = Flask(__name__)
@@ -11,13 +13,21 @@ def hello_world():
     """ Hello world """
     return 'Hello World'
 
-@app.route('/storage_example')
-def storage_example():
+@app.route('/', methods=["POST"])
+def hello_world_post():
+    """ Hello world endpoint for POST requests """
+    # curl -X POST localhost:5000/
+    return "hello world\n"
+
+
+# Examples
+@app.route('/example/country_data')
+def example_country_data():
     """ Example to show that we can view data loaded in the data module's init """
     return jsonify(country_data)
 
-@app.route('/cities_example')
-def cities_example():
+@app.route('/example/cities')
+def example_cities():
     """ Example route to showing usage of the City model class """
 
     # We will be appending dictionaries to the list instead of City objects
@@ -47,13 +57,13 @@ def cities_example():
 
     return cities_list
 
-@app.route('/places_amenties_raw_example')
-def places_amenities_raw_example():
+@app.route('/example/places_amenties_raw')
+def example_places_amenities_raw():
     """ Prints out the raw data for relationships between places and their amenities """
     return jsonify(place_to_amenity_data)
 
-@app.route('/places_amenties_prettified_example')
-def places_amenties_prettified_example():
+@app.route('/example/places_amenties_prettified_example')
+def example_places_amenties_prettified():
     """ Prints out the relationships between places and their amenities using names """
 
     output = {}
@@ -70,8 +80,8 @@ def places_amenties_prettified_example():
 
     return jsonify(output)
 
-@app.route('/places_reviews_example')
-def places_reviews_example():
+@app.route('/example/places_reviews')
+def example_places_reviews():
     """ prints out reviews of places """
 
     output = {}
@@ -93,10 +103,128 @@ def places_reviews_example():
 
     return jsonify(output)
 
-# Consider adding other routes to display data for:
+# Consider adding other test routes to display data for:
 # - the places within the countries
 # - which places are owned by which users
 # - names of the owners of places with toilets
+
+
+#API endpoints
+@app.route('/api/v1/users', methods=["GET"])
+def users_get():
+    """returns Users"""
+    data = []
+
+    for k, v in user_data.items():
+        data.append({
+            "id": v['id'],
+            "first_name": v['first_name'],
+            "last_name": v['last_name'],
+            "email": v['email'],
+            "password": v['password'],
+            "created_at": v['created_at'],
+            "updated_at": v['updated_at']
+        })
+
+    return jsonify(data)
+
+@app.route('/api/v1/users/<user_id>', methods=["GET"])
+def users_specific_get(user_id):
+    """returns specified user"""
+    data = []
+
+    if user_id not in user_data:
+        # raise IndexError("User not found!")
+        return "User not found!"
+
+    v = user_data[user_id]
+    data.append({
+        "id": v['id'],
+        "first_name": v['first_name'],
+        "last_name": v['last_name'],
+        "email": v['email'],
+        "password": v['password'],
+        "created_at": v['created_at'],
+        "updated_at": v['updated_at']
+    })
+    return jsonify(data)
+
+@app.route('/api/v1/users', methods=["POST"])
+def users_post():
+    """ posts data for new user then returns the user data"""
+    # -- Usage example --
+    # curl -X POST [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    print(request.content_type)
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    if 'email' not in data:
+        abort(400, "Missing email")
+    if 'password' not in data:
+        abort(400, "Missing password")
+
+    try:
+        u = User(first_name=data["first_name"],last_name=data["last_name"], email=data["email"], password=data["password"])
+    except ValueError as exc:
+        return repr(exc) + "\n"
+
+    attribs = {
+        "id": u.id,
+        "first_name": u.first_name,
+        "last_name": u.last_name,
+        "email": u.email,
+        "created_at": datetime.fromtimestamp(u.created_at),
+        "updated_at": datetime.fromtimestamp(u.updated_at)
+    }
+
+    return jsonify(attribs)
+
+@app.route('/api/v1/users/<user_id>', methods=["PUT"])
+def users_put(user_id):
+    """ updates existing user data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    u = user_data[user_id]
+
+    # modify the values
+    for k, v in data.items():
+        u[k] = v
+
+    # update user_data with the new name - print user_data out to confirm it if you
+    user_data[user_id] = u
+
+    v = user_data[user_id]
+    attribs = {
+        "id": v["id"],
+        "first_name": v["first_name"],
+        "last_name": v["last_name"],
+        "email": v["email"],
+        "created_at": datetime.fromtimestamp(v["created_at"]),
+        "updated_at": datetime.fromtimestamp(v["updated_at"])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
+
+# Create the rest of the endpoints for:
+#  - Country
+#  - City
+#  - Amenity
+#  - Place
+#  - Review
+
 
 # Set debug=True for the server to auto-reload when there are changes
 if __name__ == '__main__':

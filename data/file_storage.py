@@ -62,6 +62,8 @@ class FileStorage():
         except ValueError as exc:
             raise ValueError("Unable to load data from file '{}'".format(filename)) from exc
 
+        # print(data.items())
+
         for key in data:
             # key's value is 'Place_to_Amenity'
             for row in data[key]:
