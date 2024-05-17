@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+"""This module defines a class to manage file storage for hbnb evolution"""
 
 import json
 from pathlib import Path

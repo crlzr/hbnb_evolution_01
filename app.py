@@ -124,8 +124,8 @@ def users_get():
             "last_name": v['last_name'],
             "email": v['email'],
             "password": v['password'],
-            "created_at": v['created_at'],
-            "updated_at": v['updated_at']
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
         })
 
     return jsonify(data)
@@ -146,8 +146,8 @@ def users_specific_get(user_id):
         "last_name": v['last_name'],
         "email": v['email'],
         "password": v['password'],
-        "created_at": v['created_at'],
-        "updated_at": v['updated_at']
+        "created_at": datetime.fromtimestamp(v['created_at']),
+        "updated_at": datetime.fromtimestamp(v['updated_at'])
     })
     return jsonify(data)
 
@@ -175,6 +175,18 @@ def users_post():
     except ValueError as exc:
         return repr(exc) + "\n"
 
+    # add new user data to user_data
+    # note that the created_at and updated_at are using timestamps
+    user_data[u.id] = {
+        "id": u.id,
+        "first_name": u.first_name,
+        "last_name": u.last_name,
+        "email": u.email,
+        "created_at": u.created_at,
+        "updated_at": u.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
     attribs = {
         "id": u.id,
         "first_name": u.first_name,
@@ -210,17 +222,16 @@ def users_put(user_id):
         if k in ["first_name", "last_name"]:
             u[k] = v
 
-    # update user_data with the new name - print user_data out to confirm it if you
+    # update user_data with the new name - print user_data out to confirm it if you want
     user_data[user_id] = u
 
-    v = user_data[user_id]
     attribs = {
-        "id": v["id"],
-        "first_name": v["first_name"],
-        "last_name": v["last_name"],
-        "email": v["email"],
-        "created_at": datetime.fromtimestamp(v["created_at"]),
-        "updated_at": datetime.fromtimestamp(v["updated_at"])
+        "id": u["id"],
+        "first_name": u["first_name"],
+        "last_name": u["last_name"],
+        "email": u["email"],
+        "created_at": datetime.fromtimestamp(u["created_at"]),
+        "updated_at": datetime.fromtimestamp(u["updated_at"])
     }
 
     # print out the updated user details
@@ -249,6 +260,17 @@ def countries_post():
     except ValueError as exc:
         return repr(exc) + "\n"
 
+    # add new user data to user_data
+    # note that the created_at and updated_at are using timestamps
+    country_data[c.id] = {
+        "id": c.id,
+        "name": c.name,
+        "code": c.code,
+        "created_at": c.created_at,
+        "updated_at": c.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
     attribs = {
         "id": c.id,
         "name": c.name,
@@ -269,8 +291,8 @@ def countries_get():
             "id": v['id'],
             "name": v['name'],
             "code": v['code'],
-            "created_at": v['created_at'],
-            "updated_at": v['updated_at']
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
         })
 
     return jsonify(data)
@@ -278,13 +300,19 @@ def countries_get():
 @app.route('/api/v1/countries/<country_code>', methods=["GET"])
 def countries_specific_get(country_code):
     """ returns specific country data """
-    c = {}
-
     for k, v in country_data.items():
         if v['code'] == country_code:
             data = v
 
-    return jsonify(data)
+    c = {
+        "id": data['id'],
+        "name": data['name'],
+        "code": data['code'],
+        "created_at": datetime.fromtimestamp(data['created_at']),
+        "updated_at": datetime.fromtimestamp(data['updated_at'])
+    }
+
+    return jsonify(c)
 
 @app.route('/api/v1/countries/<country_code>', methods=["PUT"])
 def countries_put(country_code):
@@ -313,7 +341,7 @@ def countries_put(country_code):
         if k in ["name"]:
             c[k] = v
 
-    # update country_data with the new name - print country_data out to confirm it if you
+    # update country_data with the new name - print country_data out to confirm it if you want
     country_data[c['id']] = c
 
     attribs = {
@@ -343,8 +371,8 @@ def countries_specific_cities_get(country_code):
                 "id": v['id'],
                 "name": v['name'],
                 "country_id": v['country_id'],
-                "created_at": v['created_at'],
-                "updated_at": v['updated_at']
+                "created_at": datetime.fromtimestamp(v['created_at']),
+                "updated_at": datetime.fromtimestamp(v['updated_at'])
             })
 
     return jsonify(data)

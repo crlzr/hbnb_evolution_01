@@ -5,7 +5,7 @@ import uuid
 import re
 
 class User():
-    """Representation of city """
+    """Representation of user """
 
     def __init__(self, *args, **kwargs):
         """ constructor """
