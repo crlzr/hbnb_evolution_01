@@ -139,7 +139,11 @@ class Place():
         return self.__number_of_rooms
 
     @number_of_rooms.setter
-    #Code here
+    def number_of_rooms(self, value):
+        if isinstance(value, int) and value >= 0:
+            self.__number_of_rooms = value
+        else:
+            raise ValueError("Invalid number of rooms specified: {}".format(value))
 
     @property
     def bathrooms(self):
@@ -147,7 +151,11 @@ class Place():
         return self.__bathrooms
 
     @bathrooms.setter
-    #Code here
+    def bathrooms(self, value):
+        if isinstance(value, int) and value >= 0:
+            self.__bathrooms = value
+        else:
+            raise ValueError("Invalid number of bathrooms specified: {}".format(value))
 
     @property
     def price_per_night(self):
@@ -155,7 +163,11 @@ class Place():
         return self.__price_per_night
 
     @price_per_night.setter
-    #Code here
+    def price_per_night(self, value):
+        if isinstance(value, float) and value >= 0:
+            self.__price_per_night = value
+        else:
+            raise ValueError("Invalid price per night specified: {}".format(value))
 
     @property
     def max_guests(self):
@@ -163,7 +175,8 @@ class Place():
         return self.__max_guests
 
     @max_guests.setter
-    #Code here
-
-
-
+    def max_guests(self, value):
+        if isinstance(value, int) and value >= 0:
+            self.__max_guests = value
+        else:
+            raise ValueError("Invalid number of guests specified: {}".format(value))
