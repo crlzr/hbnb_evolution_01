@@ -3,7 +3,6 @@
 from datetime import datetime
 import uuid
 import re
-from data import country_data
 
 class Amenity():
     """Representation of Amenity """
