@@ -20,12 +20,12 @@ class Place():
         self.__city_id = ""
         self.__description = ""
         self.__address = ""
-        self.__latitude = ""
-        self.__longitude = ""
-        self.__number_of_rooms = ""
-        self.__bathrooms = ""
-        self.__price_per_night = ""
-        self.__max_guests = ""
+        self.__latitude = 0.0
+        self.__longitude = 0.0
+        self.__number_of_rooms = 0
+        self.__bathrooms = 0
+        self.__price_per_night = 0.0
+        self.__max_guests = 0
 
 
         allowed_attributes = ["host_user_id", "name", "city_id", "description", "address",
