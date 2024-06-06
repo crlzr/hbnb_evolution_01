@@ -93,7 +93,7 @@ class Place():
         if isinstance(value, str):
             self.__description = value
         else:
-            raise ValueError("Invalid description specified: {}".format(value))
+            raise TypeError("String must be an str. Got {}".format(type(value)))
 
     @property
     def address(self):
@@ -146,7 +146,7 @@ class Place():
         if isinstance(value, int) and value >= 0:
             self.__number_of_rooms = value
         else:
-            raise ValueError("Invalid number of rooms specified: {}".format(value))
+            raise TypeError("Number of rooms must be an int. Got {}".format(type(value)))
 
     @property
     def bathrooms(self):
@@ -158,7 +158,7 @@ class Place():
         if isinstance(value, int) and value >= 0:
             self.__bathrooms = value
         else:
-            raise ValueError("Invalid number of bathrooms specified: {}".format(value))
+            raise TypeError("Bathrooms must be an int. Got {}".format(type(value)))
 
     @property
     def price_per_night(self):
@@ -170,7 +170,7 @@ class Place():
         if isinstance(value, float) and value >= 0:
             self.__price_per_night = value
         else:
-            raise ValueError("Invalid price per night specified: {}".format(value))
+            raise TypeError("Price per night must be a float. Got {}".format(type(value)))
 
     @property
     def max_guests(self):
@@ -182,4 +182,4 @@ class Place():
         if isinstance(value, int) and value >= 0:
             self.__max_guests = value
         else:
-            raise ValueError("Invalid number of guests specified: {}".format(value))
+            raise TypeError("Max guests must be an int. Got {}".format(type(value)))
