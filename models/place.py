@@ -90,7 +90,10 @@ class Place():
 
     @description.setter
     def description(self, value):
-        self.__description = value
+        if isinstance(value, str):
+            self.__description = value
+        else:
+            raise ValueError("Invalid description specified: {}".format(value))
 
     @property
     def address(self):
