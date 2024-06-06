@@ -3,7 +3,7 @@
 from datetime import datetime
 import uuid
 import re
-from data import user_data
+from data import user_data, city_data
 
 class Place():
     """Representation of Places """
@@ -76,7 +76,12 @@ class Place():
         return self.__city_id
 
     @city_id.setter
-    #Code here
+    def city_id(self, value):
+    # ensure that the specified city id actually exists before setting
+        if city_data.get(value) is not None:
+            self.__city_id = value
+        else:
+            raise ValueError("Invalid city_id specified: {}".format(value))
 
     @property
     def description(self):
@@ -84,7 +89,8 @@ class Place():
         return self.__description
 
     @description.setter
-    #Code here
+    def description(self, value):
+        self.__description = value
 
     @property
     def address(self):
@@ -92,7 +98,15 @@ class Place():
         return self.__address
 
     @address.setter
-    #Code here
+    def address(self, value):
+        """Setter for private prop address"""
+
+    # ensure that the value is not spaces-only and is alphabets + spaces only
+        is_valid_address = len(value.strip()) > 0 and re.search("^[a-zA-Z0-9 \-]+$", value)
+        if is_valid_address:
+            self.__address = value
+        else:
+            raise ValueError("Invalid address specified: {}".format(value))
 
     @property
     def latitude(self):
@@ -100,7 +114,12 @@ class Place():
         return self.__latitude
 
     @latitude.setter
-    #Code here
+    def latitude(self, value):
+        if re.search("^[\-]?[0-9]+\.[0-9]+$", value):
+            self.__latitude = value
+        else:
+            raise ValueError("Invalid latitude specified: {}".format(value))
+
 
     @property
     def longitude(self):
@@ -108,7 +127,11 @@ class Place():
         return self.__longitude
 
     @longitude.setter
-    #Code here
+    def longitude(self, value):
+        if re.search("^[\-]?[0-9]+\.[0-9]+$", value):
+            self.__longitude = value
+        else:
+            raise ValueError("Invalid longitude specified: {}".format(value))
 
     @property
     def number_of_rooms(self):
