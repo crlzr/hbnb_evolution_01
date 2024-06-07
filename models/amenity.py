@@ -39,3 +39,5 @@ class Amenity():
             self.__name = value
         else:
             raise ValueError("Invalid amenity name specified: {}".format(value))
+
+# this is a test comment
