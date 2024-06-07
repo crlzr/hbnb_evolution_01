@@ -1,4 +1,4 @@
-#!/usr/bin/python /// STILL TO DO
+#!/usr/bin/python
 
 from datetime import datetime
 import uuid
@@ -39,5 +39,3 @@ class Amenity():
             self.__name = value
         else:
             raise ValueError("Invalid amenity name specified: {}".format(value))
-
-# this is a test comment
