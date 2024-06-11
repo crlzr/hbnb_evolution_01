@@ -461,9 +461,9 @@ def cities_post():
     return jsonify(attribs)
 
 
-@app.route('/api/v1/cities/', methods=["PUT"])
-def countries_put(country_code):
-    """ updates existing user data using specified id """
+@app.route('/api/v1/cities/<city_id>', methods=["PUT"])
+def cities_put(city_id):
+    """ updates existing city data using specified id """
     # -- Usage example --
     # curl -X PUT [URL] /
     #    -H "Content-Type: application/json" /
@@ -475,26 +475,27 @@ def countries_put(country_code):
         abort(400, "Not a JSON")
 
     data = request.get_json()
-    for k, v in country_data.items():
-        if v['code'] == country_code:
+
+    for k, v in city_data.items():
+        if v['id'] == city_id:
             c = v
 
     if not c:
-        abort(400, "Country not found for code {}".format(country_code))
+        abort(400, "City not found for id {}".format(city_id))
 
     # modify the values
-    # only name is allowed to be modified
+    # only city name and country id is allowed to be modified
     for k, v in data.items():
-        if k in ["name"]:
+        if k in ["name", "country_id"]:
             c[k] = v
 
-    # update country_data with the new name - print country_data out to confirm it if you want
-    country_data[c['id']] = c
+    # update city_data with the new name - print city_data out to confirm it if you want
+    city_data[city_id] = c
 
     attribs = {
         "id": c["id"],
         "name": c["name"],
-        "code": c["code"],
+        "country_id": c["country_id"],
         "created_at": datetime.fromtimestamp(c["created_at"]),
         "updated_at": datetime.fromtimestamp(c["updated_at"])
     }
