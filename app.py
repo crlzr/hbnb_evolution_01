@@ -791,6 +791,104 @@ def places_put(place_id):
     # print out the updated user details
     return jsonify(attribs)
 
+
+# --- REVIEWS ---
+@app.route('/api/v1/reviews', methods=["GET"])
+def reviews_get():
+    """returns all reviews"""
+    data = []
+
+    for k, v in review_data.items():
+        data.append({
+            "id": v['id'],
+            "commentor_user_id": v['commentor_user_id'],
+            "place_id": v['place_id'],
+            "feedback": v['feedback'],
+            "rating": v['rating'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
+@app.route('/api/v1/reviews/<review_id>', methods=["GET"])
+def review_specific_get(review_id):
+    """returns specified amenity"""
+    if review_id not in review_data:
+        return "Review not found!"
+
+    v = review_data[review_id]
+    data = {
+        "id": v['id'],
+        "commentor_user_id": v['commentor_user_id'],
+        "place_id": v['place_id'],
+        "feedback": v['feedback'],
+        "rating": v['rating'],
+        "created_at": datetime.fromtimestamp(v['created_at']),
+        "updated_at": datetime.fromtimestamp(v['updated_at'])
+    }
+    return jsonify(data)
+
+@app.route('/api/v1/reviews', methods=["POST"])
+def reviews_post():
+    """ posts data for new review then returns the review data"""
+    # -- Usage example --
+    # curl -X POST [URL] /
+    #    -H "Content-Type: application/json" /
+    #     -d '{"key1":"value1","key2":"value2"}'
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    for key in ["commentor_user_id", "place_id","feedback", "rating"]:
+        if key not in data:
+            abort(400, "Missing {}".format(key))
+    print("printing data")
+    print(data)
+
+    try:
+        r = Reviews(commentor_user_id=data["commentor_user_id"],
+                    place_id=data["place_id"],
+                    feedback=data["feedback"],
+                    rating=data["rating"])
+    except ValueError as exc:
+        return repr(exc) + "\n"
+
+    # add new amenity data to amenity_data
+    # note that the created_at and updated_at are using timestamps
+    review_data[r.id] = {
+        "id": r.id,
+        "commentor_user_id": r.commentor_user_id,
+        "place_id": r.place_id,
+        "feedback": r.feedback,
+        "rating": r.rating,
+        "created_at": r.created_at,
+        "updated_at": r.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
+    attribs = {
+        "id": r.id,
+        "commentor_user_id": r.commentor_user_id,
+        "place_id": r.place_id,
+        "feedback": r.feedback,
+        "rating": r.rating,
+        "created_at": datetime.fromtimestamp(r.created_at),
+        "updated_at": datetime.fromtimestamp(r.updated_at)
+    }
+
+    return jsonify(attribs)
+
+
+
+
+
+
+
+
+
+
 # Set debug=True for the server to auto-reload when there are changes
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)
