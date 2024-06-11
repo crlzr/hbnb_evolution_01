@@ -383,6 +383,127 @@ def countries_specific_cities_get(country_code):
 #  - Place
 #  - Review
 
+@app.route('/api/v1/cities', methods=["GET"])
+def cities_get():
+    """returns Cities"""
+    data = []
+
+    for k, v in city_data.items():
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "country_id": v['country_id'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
+
+@app.route('/api/v1/cities/<city_id>', methods=["GET"])
+def cities_specific_get(city_id):
+    """returns specified city"""
+    if city_id not in city_data:
+        return "City not found!"
+
+    v = city_data[city_id]
+    data = {
+        "id": v['id'],
+        "name": v['name'],
+        "country_id": v['country_id'],
+        "created_at": datetime.fromtimestamp(v['created_at']),
+        "updated_at": datetime.fromtimestamp(v['updated_at'])
+    }
+    return jsonify(data)
+
+
+@app.route('/api/v1/cities', methods=["POST"])
+def cities_post():
+    """ posts data for new city then returns the city data"""
+    # -- Usage example --
+    # curl -X POST [URL] /
+    #    -H "Content-Type: application/json" /
+    #     -d '{"key1":"value1","key2":"value2"}'
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    if 'name' not in data:
+        abort(400, "Missing name")
+    if 'country_id' not in data:
+        abort(400, "Missing country code")
+
+    try:
+        c = City(name=data["name"],country_id=data["country_id"])
+    except ValueError as exc:
+        return repr(exc) + "\n"
+
+    # add new user data to user_data
+    # note that the created_at and updated_at are using timestamps
+    city_data[c.id] = {
+        "id": c.id,
+        "name": c.name,
+        "country_id": c.country_id,
+        "created_at": c.created_at,
+        "updated_at": c.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
+    attribs = {
+        "id": c.id,
+        "name": c.name,
+        "country_id": c.country_id,
+        "created_at": datetime.fromtimestamp(c.created_at),
+        "updated_at": datetime.fromtimestamp(c.updated_at)
+    }
+
+    return jsonify(attribs)
+
+
+@app.route('/api/v1/cities/', methods=["PUT"])
+def countries_put(country_code):
+    """ updates existing user data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    c = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    for k, v in country_data.items():
+        if v['code'] == country_code:
+            c = v
+
+    if not c:
+        abort(400, "Country not found for code {}".format(country_code))
+
+    # modify the values
+    # only name is allowed to be modified
+    for k, v in data.items():
+        if k in ["name"]:
+            c[k] = v
+
+    # update country_data with the new name - print country_data out to confirm it if you want
+    country_data[c['id']] = c
+
+    attribs = {
+        "id": c["id"],
+        "name": c["name"],
+        "code": c["code"],
+        "created_at": datetime.fromtimestamp(c["created_at"]),
+        "updated_at": datetime.fromtimestamp(c["updated_at"])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
+
+
+
 
 # Set debug=True for the server to auto-reload when there are changes
 if __name__ == '__main__':
