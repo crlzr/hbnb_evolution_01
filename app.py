@@ -667,7 +667,6 @@ def place_specific_get(place_id):
     }
     return jsonify(data)
 
-
 @app.route('/api/v1/places', methods=["POST"])
 def places_post():
     """ posts data for new place then returns the place data"""
@@ -738,6 +737,58 @@ def places_post():
         "updated_at": datetime.fromtimestamp(p.updated_at)
     }
 
+    return jsonify(attribs)
+
+@app.route('/api/v1/places/<place_id>', methods=["PUT"])
+def places_put(place_id):
+    """ updates existing place data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    p = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+
+    for k, v in place_data.items():
+        if v['id'] == place_id:
+            p = v
+
+    if not p:
+        abort(400, "Place not found for id {}".format(place_id))
+
+    # modify the values
+    # only place name is allowed to be modified
+    for k, v in data.items():
+        if k in ["name", "host_user_id", "city_id","description", "address",
+                "latitude", "longitude", "number_of_rooms", "bathrooms",
+                "price_per_night", "max_guests"]:
+            p[k] = v
+
+    # update place_data with the new name - print place_data out to confirm it if you want
+    place_data[place_id] = p
+    attribs = {
+        "id": p['id'],
+        "name": p['name'],
+        "host_user_id": p['host_user_id'],
+        "city_id": p['city_id'],
+        "description": p['description'],
+        "address": p['address'],
+        "latitude": p['latitude'],
+        "longitude": p['longitude'],
+        "number_of_rooms": p['number_of_rooms'],
+        "bathrooms": p['bathrooms'],
+        "price_per_night": p['price_per_night'],
+        "max_guests": p['max_guests'],
+        "created_at": datetime.fromtimestamp(p['created_at']),
+        "updated_at": datetime.fromtimestamp(p['updated_at'])
+    }
+
+    # print out the updated user details
     return jsonify(attribs)
 
 # Set debug=True for the server to auto-reload when there are changes
