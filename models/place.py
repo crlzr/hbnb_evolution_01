@@ -29,7 +29,7 @@ class Place():
 
 
         allowed_attributes = ["host_user_id", "name", "city_id", "description", "address",
-                              "latitude", "longitute", "number_of_rooms", "bathrooms",
+                              "latitude", "longitude", "number_of_rooms", "bathrooms",
                               "price_per_night", "max_guests"]
 
         # Allow all of the above.
