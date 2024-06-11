@@ -5,6 +5,7 @@ from flask import Flask, jsonify, request, abort
 from models.city import City
 from models.country import Country
 from models.user import User
+from models.amenity import Amenity
 from data import country_data, place_data, amenity_data, place_to_amenity_data, review_data, user_data, city_data
 
 app = Flask(__name__)
@@ -503,6 +504,143 @@ def cities_put(city_id):
     # print out the updated user details
     return jsonify(attribs)
 
+
+
+@app.route('/api/v1/amenities', methods=["GET"])
+def amenities_get():
+    """returns all Amenities"""
+    data = []
+
+    for k, v in amenity_data.items():
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
+@app.route('/api/v1/amenities/<amenity_id>', methods=["GET"])
+def amenity_specific_get(amenity_id):
+    """returns specified amenity"""
+    if amenity_id not in amenity_data:
+        return "Amenity not found!"
+
+    v = amenity_data[amenity_id]
+    data = {
+        "id": v['id'],
+        "name": v['name'],
+        "created_at": datetime.fromtimestamp(v['created_at']),
+        "updated_at": datetime.fromtimestamp(v['updated_at'])
+    }
+    return jsonify(data)
+
+
+@app.route('/api/v1/amenities', methods=["POST"])
+def amenities_post():
+    """ posts data for new amenity then returns the amenity data"""
+    # -- Usage example --
+    # curl -X POST [URL] /
+    #    -H "Content-Type: application/json" /
+    #     -d '{"key1":"value1","key2":"value2"}'
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    if 'name' not in data:
+        abort(400, "Missing name")
+
+    try:
+        a = Amenity(name=data["name"])
+    except ValueError as exc:
+        return repr(exc) + "\n"
+
+    # add new amenity data to amenity_data
+    # note that the created_at and updated_at are using timestamps
+    amenity_data[a.id] = {
+        "id": a.id,
+        "name": a.name,
+        "created_at": a.created_at,
+        "updated_at": a.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
+    attribs = {
+        "id": a.id,
+        "name": a.name,
+        "created_at": datetime.fromtimestamp(a.created_at),
+        "updated_at": datetime.fromtimestamp(a.updated_at)
+    }
+
+    return jsonify(attribs)
+
+
+@app.route('/api/v1/amenities/<amenity_id>', methods=["PUT"])
+def amenity_put(amenity_id):
+    """ updates existing amenity data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    c = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+
+    for k, v in amenity_data.items():
+        if v['id'] == amenity_id:
+            a = v
+
+    if not a:
+        abort(400, "Amenity not found for id {}".format(amenity_id))
+
+    # modify the values
+    # only amenity name is allowed to be modified
+    for k, v in data.items():
+        if k in ["name"]:
+            a[k] = v
+
+    # update amenity_data with the new name - print amenity_data out to confirm it if you want
+    amenity_data[amenity_id] = a
+
+    attribs = {
+        "id": a["id"],
+        "name": a["name"],
+        "created_at": datetime.fromtimestamp(a["created_at"]),
+        "updated_at": datetime.fromtimestamp(a["updated_at"])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
+
+@app.route('/api/v1/places', methods=["GET"])
+def places_get():
+    """returns all places"""
+    data = []
+
+    for k, v in place_data.items():
+        data.append({
+            "id": v['id'],
+            "host_user_id": v['host_user_id'],
+            "name": v['name'],
+            "city_id": v['city_id'],
+            "description": v['description'],
+            "address": v['address'],
+            "latitude": v['latitude'],
+            "longitude": v['longitude'],
+            "number_of_rooms": v['number_of_rooms'],
+            "bathrooms": v['bathrooms'],
+            "price_per_night": v['price_per_night'],
+            "max_guests": v['max_guests'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+    return jsonify(data)
 
 
 
