@@ -844,8 +844,6 @@ def reviews_post():
     for key in ["commentor_user_id", "place_id","feedback", "rating"]:
         if key not in data:
             abort(400, "Missing {}".format(key))
-    print("printing data")
-    print(data)
 
     try:
         r = Reviews(commentor_user_id=data["commentor_user_id"],
