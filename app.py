@@ -878,6 +878,49 @@ def reviews_post():
 
     return jsonify(attribs)
 
+@app.route('/api/v1/reviews/<review_id>', methods=["PUT"])
+def reviews_put(review_id):
+    """ updates existing review data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    r = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+
+    for k, v in review_data.items():
+        if v['id'] == review_id:
+            r = v
+
+    if not r:
+        abort(400, "Review not found for id {}".format(review_id))
+
+    # modify the values
+    # only review name is allowed to be modified
+    for k, v in data.items():
+        if k in ["commentor_user_id", "place_id","feedback", "rating"]:
+            r[k] = v
+
+    # update review_data with the new name - print review_data out to confirm it if you want
+    review_data[review_id] = r
+
+    attribs = {
+        "id": r["id"],
+        "commentor_user_id": r["commentor_user_id"],
+        "place_id": r["place_id"],
+        "feedback": r["feedback"],
+        "rating": r["rating"],
+        "created_at": datetime.fromtimestamp(r["created_at"]),
+        "updated_at": datetime.fromtimestamp(r["updated_at"])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
 
 
 
