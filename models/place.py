@@ -118,11 +118,10 @@ class Place():
 
     @latitude.setter
     def latitude(self, value):
-        if re.search("^[\-]?[0-9]+\.[0-9]+$", value):
+        if isinstance(value, float) and value >= -90. and value <= 90.:
             self.__latitude = value
         else:
             raise ValueError("Invalid latitude specified: {}".format(value))
-
 
     @property
     def longitude(self):
@@ -131,7 +130,7 @@ class Place():
 
     @longitude.setter
     def longitude(self, value):
-        if re.search("^[\-]?[0-9]+\.[0-9]+$", value):
+        if isinstance(value, float) and value >= -180. and value <= 180.:
             self.__longitude = value
         else:
             raise ValueError("Invalid longitude specified: {}".format(value))

@@ -403,7 +403,6 @@ def cities_get():
 
     return jsonify(data)
 
-
 @app.route('/api/v1/cities/<city_id>', methods=["GET"])
 def cities_specific_get(city_id):
     """returns specified city"""
@@ -419,7 +418,6 @@ def cities_specific_get(city_id):
         "updated_at": datetime.fromtimestamp(v['updated_at'])
     }
     return jsonify(data)
-
 
 @app.route('/api/v1/cities', methods=["POST"])
 def cities_post():
@@ -463,7 +461,6 @@ def cities_post():
     }
 
     return jsonify(attribs)
-
 
 @app.route('/api/v1/cities/<city_id>', methods=["PUT"])
 def cities_put(city_id):
@@ -630,8 +627,8 @@ def places_get():
         data.append({
             "id": v['id'],
             "host_user_id": v['host_user_id'],
-            "name": v['name'],
             "city_id": v['city_id'],
+            "name": v['name'],
             "description": v['description'],
             "address": v['address'],
             "latitude": v['latitude'],
