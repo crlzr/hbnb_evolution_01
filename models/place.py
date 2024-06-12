@@ -20,16 +20,16 @@ class Place():
         self.__city_id = ""
         self.__description = ""
         self.__address = ""
-        self.__latitude = ""
-        self.__longitude = ""
-        self.__number_of_rooms = ""
-        self.__bathrooms = ""
-        self.__price_per_night = ""
-        self.__max_guests = ""
+        self.__latitude = 0.0
+        self.__longitude = 0.0
+        self.__number_of_rooms = 0
+        self.__bathrooms = 0
+        self.__price_per_night = 0.0
+        self.__max_guests = 0
 
 
         allowed_attributes = ["host_user_id", "name", "city_id", "description", "address",
-                              "latitude", "longitute", "number_of_rooms", "bathrooms",
+                              "latitude", "longitude", "number_of_rooms", "bathrooms",
                               "price_per_night", "max_guests"]
 
         # Allow all of the above.
@@ -118,11 +118,10 @@ class Place():
 
     @latitude.setter
     def latitude(self, value):
-        if re.search("^[\-]?[0-9]+\.[0-9]+$", value):
+        if isinstance(value, float) and value >= -90. and value <= 90.:
             self.__latitude = value
         else:
             raise ValueError("Invalid latitude specified: {}".format(value))
-
 
     @property
     def longitude(self):
@@ -131,7 +130,7 @@ class Place():
 
     @longitude.setter
     def longitude(self, value):
-        if re.search("^[\-]?[0-9]+\.[0-9]+$", value):
+        if isinstance(value, float) and value >= -180. and value <= 180.:
             self.__longitude = value
         else:
             raise ValueError("Invalid longitude specified: {}".format(value))

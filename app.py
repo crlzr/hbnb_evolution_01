@@ -5,6 +5,9 @@ from flask import Flask, jsonify, request, abort
 from models.city import City
 from models.country import Country
 from models.user import User
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Reviews
 from data import country_data, place_data, amenity_data, place_to_amenity_data, review_data, user_data, city_data
 
 app = Flask(__name__)
@@ -382,6 +385,549 @@ def countries_specific_cities_get(country_code):
 #  - Amenity
 #  - Place
 #  - Review
+
+# --- CITIES ---
+@app.route('/api/v1/cities', methods=["GET"])
+def cities_get():
+    """returns Cities"""
+    data = []
+
+    for k, v in city_data.items():
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "country_id": v['country_id'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
+@app.route('/api/v1/cities/<city_id>', methods=["GET"])
+def cities_specific_get(city_id):
+    """returns specified city"""
+    if city_id not in city_data:
+        return "City not found!"
+
+    v = city_data[city_id]
+    data = {
+        "id": v['id'],
+        "name": v['name'],
+        "country_id": v['country_id'],
+        "created_at": datetime.fromtimestamp(v['created_at']),
+        "updated_at": datetime.fromtimestamp(v['updated_at'])
+    }
+    return jsonify(data)
+
+@app.route('/api/v1/cities', methods=["POST"])
+def cities_post():
+    """ posts data for new city then returns the city data"""
+    # -- Usage example --
+    # curl -X POST [URL] /
+    #    -H "Content-Type: application/json" /
+    #     -d '{"key1":"value1","key2":"value2"}'
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    if 'name' not in data:
+        abort(400, "Missing name")
+    if 'country_id' not in data:
+        abort(400, "Missing country code")
+
+    try:
+        c = City(name=data["name"],country_id=data["country_id"])
+    except ValueError as exc:
+        return repr(exc) + "\n"
+
+    # add new user data to user_data
+    # note that the created_at and updated_at are using timestamps
+    city_data[c.id] = {
+        "id": c.id,
+        "name": c.name,
+        "country_id": c.country_id,
+        "created_at": c.created_at,
+        "updated_at": c.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
+    attribs = {
+        "id": c.id,
+        "name": c.name,
+        "country_id": c.country_id,
+        "created_at": datetime.fromtimestamp(c.created_at),
+        "updated_at": datetime.fromtimestamp(c.updated_at)
+    }
+
+    return jsonify(attribs)
+
+@app.route('/api/v1/cities/<city_id>', methods=["PUT"])
+def cities_put(city_id):
+    """ updates existing city data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    c = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+
+    for k, v in city_data.items():
+        if v['id'] == city_id:
+            c = v
+
+    if not c:
+        abort(400, "City not found for id {}".format(city_id))
+
+    # modify the values
+    # only city name and country id is allowed to be modified
+    for k, v in data.items():
+        if k in ["name", "country_id"]:
+            c[k] = v
+
+    # update city_data with the new name - print city_data out to confirm it if you want
+    city_data[city_id] = c
+
+    attribs = {
+        "id": c["id"],
+        "name": c["name"],
+        "country_id": c["country_id"],
+        "created_at": datetime.fromtimestamp(c["created_at"]),
+        "updated_at": datetime.fromtimestamp(c["updated_at"])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
+
+
+# --- AMENITIES ---
+@app.route('/api/v1/amenities', methods=["GET"])
+def amenities_get():
+    """returns all Amenities"""
+    data = []
+
+    for k, v in amenity_data.items():
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
+@app.route('/api/v1/amenities/<amenity_id>', methods=["GET"])
+def amenity_specific_get(amenity_id):
+    """returns specified amenity"""
+    if amenity_id not in amenity_data:
+        return "Amenity not found!"
+
+    v = amenity_data[amenity_id]
+    data = {
+        "id": v['id'],
+        "name": v['name'],
+        "created_at": datetime.fromtimestamp(v['created_at']),
+        "updated_at": datetime.fromtimestamp(v['updated_at'])
+    }
+    return jsonify(data)
+
+@app.route('/api/v1/amenities', methods=["POST"])
+def amenities_post():
+    """ posts data for new amenity then returns the amenity data"""
+    # -- Usage example --
+    # curl -X POST [URL] /
+    #    -H "Content-Type: application/json" /
+    #     -d '{"key1":"value1","key2":"value2"}'
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    if 'name' not in data:
+        abort(400, "Missing name")
+
+    try:
+        a = Amenity(name=data["name"])
+    except ValueError as exc:
+        return repr(exc) + "\n"
+
+    # add new amenity data to amenity_data
+    # note that the created_at and updated_at are using timestamps
+    amenity_data[a.id] = {
+        "id": a.id,
+        "name": a.name,
+        "created_at": a.created_at,
+        "updated_at": a.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
+    attribs = {
+        "id": a.id,
+        "name": a.name,
+        "created_at": datetime.fromtimestamp(a.created_at),
+        "updated_at": datetime.fromtimestamp(a.updated_at)
+    }
+
+    return jsonify(attribs)
+
+@app.route('/api/v1/amenities/<amenity_id>', methods=["PUT"])
+def amenity_put(amenity_id):
+    """ updates existing amenity data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    c = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+
+    for k, v in amenity_data.items():
+        if v['id'] == amenity_id:
+            a = v
+
+    if not a:
+        abort(400, "Amenity not found for id {}".format(amenity_id))
+
+    # modify the values
+    # only amenity name is allowed to be modified
+    for k, v in data.items():
+        if k in ["name"]:
+            a[k] = v
+
+    # update amenity_data with the new name - print amenity_data out to confirm it if you want
+    amenity_data[amenity_id] = a
+
+    attribs = {
+        "id": a["id"],
+        "name": a["name"],
+        "created_at": datetime.fromtimestamp(a["created_at"]),
+        "updated_at": datetime.fromtimestamp(a["updated_at"])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
+
+
+# --- PLACES ---
+@app.route('/api/v1/places', methods=["GET"])
+def places_get():
+    """returns all places"""
+    data = []
+
+    for k, v in place_data.items():
+        data.append({
+            "id": v['id'],
+            "host_user_id": v['host_user_id'],
+            "city_id": v['city_id'],
+            "name": v['name'],
+            "description": v['description'],
+            "address": v['address'],
+            "latitude": v['latitude'],
+            "longitude": v['longitude'],
+            "number_of_rooms": v['number_of_rooms'],
+            "bathrooms": v['bathrooms'],
+            "price_per_night": v['price_per_night'],
+            "max_guests": v['max_guests'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+    return jsonify(data)
+
+@app.route('/api/v1/places/<place_id>', methods=["GET"])
+def place_specific_get(place_id):
+    """returns specified place"""
+    if place_id not in place_data:
+        return "Place not found!"
+
+    v = place_data[place_id]
+    data = {
+        "id": v['id'],
+        "host_user_id": v['host_user_id'],
+        "name": v['name'],
+        "city_id": v['city_id'],
+        "description": v['description'],
+        "address": v['address'],
+        "latitude": v['latitude'],
+        "longitude": v['longitude'],
+        "number_of_rooms": v['number_of_rooms'],
+        "bathrooms": v['bathrooms'],
+        "price_per_night": v['price_per_night'],
+        "max_guests": v['max_guests'],
+        "created_at": datetime.fromtimestamp(v['created_at']),
+        "updated_at": datetime.fromtimestamp(v['updated_at'])
+    }
+    return jsonify(data)
+
+@app.route('/api/v1/places', methods=["POST"])
+def places_post():
+    """ posts data for new place then returns the place data"""
+    # -- Usage example --
+    # curl -X POST [URL] /
+    #    -H "Content-Type: application/json" /
+    #     -d '{"key1":"value1","key2":"value2"}'
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    for key in ["host_user_id", "city_id", "name","description", "address",
+                "latitude", "longitude",  "number_of_rooms", "bathrooms",
+                "price_per_night", "max_guests"]:
+        if key not in data:
+            abort(400, "Missing {}".format(key))
+
+    try:
+        p = Place(name=data["name"],
+                  host_user_id=data["host_user_id"],
+                  city_id=data["city_id"],
+                  description=data["description"],
+                  address=data["address"],
+                  latitude=data["latitude"],
+                  longitude=data["longitude"],
+                  number_of_rooms=data["number_of_rooms"],
+                  bathrooms=data["bathrooms"],
+                  price_per_night=data["price_per_night"],
+                  max_guests=data["max_guests"])
+    except ValueError as exc:
+        return repr(exc) + "\n"
+
+    # add new place data to place_data
+    # note that the created_at and updated_at are using timestamps
+    place_data[p.id] = {
+        "id": p.id,
+        "name": p.name,
+        "host_user_id": p.host_user_id,
+        "city_id": p.city_id,
+        "description": p.description,
+        "address": p.address,
+        "latitude": p.latitude,
+        "longitude": p.longitude,
+        "number_of_rooms": p.number_of_rooms,
+        "bathrooms": p.bathrooms,
+        "price_per_night": p.price_per_night,
+        "max_guests": p.max_guests,
+        "created_at": p.created_at,
+        "updated_at": p.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
+    attribs = {
+        "id": p.id,
+        "name": p.name,
+        "host_user_id": p.host_user_id,
+        "city_id": p.city_id,
+        "description": p.description,
+        "address": p.address,
+        "latitude": p.latitude,
+        "longitude": p.longitude,
+        "number_of_rooms": p.number_of_rooms,
+        "bathrooms": p.bathrooms,
+        "price_per_night": p.price_per_night,
+        "max_guests": p.max_guests,
+        "created_at": datetime.fromtimestamp(p.created_at),
+        "updated_at": datetime.fromtimestamp(p.updated_at)
+    }
+
+    return jsonify(attribs)
+
+@app.route('/api/v1/places/<place_id>', methods=["PUT"])
+def places_put(place_id):
+    """ updates existing place data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    p = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+
+    for k, v in place_data.items():
+        if v['id'] == place_id:
+            p = v
+
+    if not p:
+        abort(400, "Place not found for id {}".format(place_id))
+
+    # modify the values
+    # only place name is allowed to be modified
+    for k, v in data.items():
+        if k in ["name", "host_user_id", "city_id","description", "address",
+                "latitude", "longitude", "number_of_rooms", "bathrooms",
+                "price_per_night", "max_guests"]:
+            p[k] = v
+
+    # update place_data with the new name - print place_data out to confirm it if you want
+    place_data[place_id] = p
+    attribs = {
+        "id": p['id'],
+        "name": p['name'],
+        "host_user_id": p['host_user_id'],
+        "city_id": p['city_id'],
+        "description": p['description'],
+        "address": p['address'],
+        "latitude": p['latitude'],
+        "longitude": p['longitude'],
+        "number_of_rooms": p['number_of_rooms'],
+        "bathrooms": p['bathrooms'],
+        "price_per_night": p['price_per_night'],
+        "max_guests": p['max_guests'],
+        "created_at": datetime.fromtimestamp(p['created_at']),
+        "updated_at": datetime.fromtimestamp(p['updated_at'])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
+
+
+# --- REVIEWS ---
+@app.route('/api/v1/reviews', methods=["GET"])
+def reviews_get():
+    """returns all reviews"""
+    data = []
+
+    for k, v in review_data.items():
+        data.append({
+            "id": v['id'],
+            "commentor_user_id": v['commentor_user_id'],
+            "place_id": v['place_id'],
+            "feedback": v['feedback'],
+            "rating": v['rating'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
+@app.route('/api/v1/reviews/<review_id>', methods=["GET"])
+def review_specific_get(review_id):
+    """returns specified amenity"""
+    if review_id not in review_data:
+        return "Review not found!"
+
+    v = review_data[review_id]
+    data = {
+        "id": v['id'],
+        "commentor_user_id": v['commentor_user_id'],
+        "place_id": v['place_id'],
+        "feedback": v['feedback'],
+        "rating": v['rating'],
+        "created_at": datetime.fromtimestamp(v['created_at']),
+        "updated_at": datetime.fromtimestamp(v['updated_at'])
+    }
+    return jsonify(data)
+
+@app.route('/api/v1/reviews', methods=["POST"])
+def reviews_post():
+    """ posts data for new review then returns the review data"""
+    # -- Usage example --
+    # curl -X POST [URL] /
+    #    -H "Content-Type: application/json" /
+    #     -d '{"key1":"value1","key2":"value2"}'
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    for key in ["commentor_user_id", "place_id","feedback", "rating"]:
+        if key not in data:
+            abort(400, "Missing {}".format(key))
+
+    try:
+        r = Reviews(commentor_user_id=data["commentor_user_id"],
+                    place_id=data["place_id"],
+                    feedback=data["feedback"],
+                    rating=data["rating"])
+    except ValueError as exc:
+        return repr(exc) + "\n"
+
+    # add new amenity data to amenity_data
+    # note that the created_at and updated_at are using timestamps
+    review_data[r.id] = {
+        "id": r.id,
+        "commentor_user_id": r.commentor_user_id,
+        "place_id": r.place_id,
+        "feedback": r.feedback,
+        "rating": r.rating,
+        "created_at": r.created_at,
+        "updated_at": r.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
+    attribs = {
+        "id": r.id,
+        "commentor_user_id": r.commentor_user_id,
+        "place_id": r.place_id,
+        "feedback": r.feedback,
+        "rating": r.rating,
+        "created_at": datetime.fromtimestamp(r.created_at),
+        "updated_at": datetime.fromtimestamp(r.updated_at)
+    }
+
+    return jsonify(attribs)
+
+@app.route('/api/v1/reviews/<review_id>', methods=["PUT"])
+def reviews_put(review_id):
+    """ updates existing review data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    r = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+
+    for k, v in review_data.items():
+        if v['id'] == review_id:
+            r = v
+
+    if not r:
+        abort(400, "Review not found for id {}".format(review_id))
+
+    # modify the values
+    # only review name is allowed to be modified
+    for k, v in data.items():
+        if k in ["commentor_user_id", "place_id","feedback", "rating"]:
+            r[k] = v
+
+    # update review_data with the new name - print review_data out to confirm it if you want
+    review_data[review_id] = r
+
+    attribs = {
+        "id": r["id"],
+        "commentor_user_id": r["commentor_user_id"],
+        "place_id": r["place_id"],
+        "feedback": r["feedback"],
+        "rating": r["rating"],
+        "created_at": datetime.fromtimestamp(r["created_at"]),
+        "updated_at": datetime.fromtimestamp(r["updated_at"])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
+
+
+
+
+
+
+
 
 
 # Set debug=True for the server to auto-reload when there are changes
