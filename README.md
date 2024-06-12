@@ -1,3 +1,5 @@
+![alt text](H.png)
+
 ## Description
 
 #### Functionalities of this command interpreter:
@@ -26,7 +28,7 @@ This project is interpreted/tested on Ubuntu 14.04 LTS using python3 (version 3.
 
 
 ## Authors
-Kieran Hirsh
-Carole Zenruffinen
-Susmitha Banda
-Krisha Valencia
+* Kieran Hirsh
+* Carole Zenruffinen
+* Susmitha Banda
+* Krisha Valencia
