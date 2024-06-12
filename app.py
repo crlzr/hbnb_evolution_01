@@ -667,7 +667,6 @@ def place_specific_get(place_id):
     }
     return jsonify(data)
 
-
 @app.route('/api/v1/places', methods=["POST"])
 def places_post():
     """ posts data for new place then returns the place data"""
@@ -739,6 +738,197 @@ def places_post():
     }
 
     return jsonify(attribs)
+
+@app.route('/api/v1/places/<place_id>', methods=["PUT"])
+def places_put(place_id):
+    """ updates existing place data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    p = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+
+    for k, v in place_data.items():
+        if v['id'] == place_id:
+            p = v
+
+    if not p:
+        abort(400, "Place not found for id {}".format(place_id))
+
+    # modify the values
+    # only place name is allowed to be modified
+    for k, v in data.items():
+        if k in ["name", "host_user_id", "city_id","description", "address",
+                "latitude", "longitude", "number_of_rooms", "bathrooms",
+                "price_per_night", "max_guests"]:
+            p[k] = v
+
+    # update place_data with the new name - print place_data out to confirm it if you want
+    place_data[place_id] = p
+    attribs = {
+        "id": p['id'],
+        "name": p['name'],
+        "host_user_id": p['host_user_id'],
+        "city_id": p['city_id'],
+        "description": p['description'],
+        "address": p['address'],
+        "latitude": p['latitude'],
+        "longitude": p['longitude'],
+        "number_of_rooms": p['number_of_rooms'],
+        "bathrooms": p['bathrooms'],
+        "price_per_night": p['price_per_night'],
+        "max_guests": p['max_guests'],
+        "created_at": datetime.fromtimestamp(p['created_at']),
+        "updated_at": datetime.fromtimestamp(p['updated_at'])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
+
+
+# --- REVIEWS ---
+@app.route('/api/v1/reviews', methods=["GET"])
+def reviews_get():
+    """returns all reviews"""
+    data = []
+
+    for k, v in review_data.items():
+        data.append({
+            "id": v['id'],
+            "commentor_user_id": v['commentor_user_id'],
+            "place_id": v['place_id'],
+            "feedback": v['feedback'],
+            "rating": v['rating'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
+@app.route('/api/v1/reviews/<review_id>', methods=["GET"])
+def review_specific_get(review_id):
+    """returns specified amenity"""
+    if review_id not in review_data:
+        return "Review not found!"
+
+    v = review_data[review_id]
+    data = {
+        "id": v['id'],
+        "commentor_user_id": v['commentor_user_id'],
+        "place_id": v['place_id'],
+        "feedback": v['feedback'],
+        "rating": v['rating'],
+        "created_at": datetime.fromtimestamp(v['created_at']),
+        "updated_at": datetime.fromtimestamp(v['updated_at'])
+    }
+    return jsonify(data)
+
+@app.route('/api/v1/reviews', methods=["POST"])
+def reviews_post():
+    """ posts data for new review then returns the review data"""
+    # -- Usage example --
+    # curl -X POST [URL] /
+    #    -H "Content-Type: application/json" /
+    #     -d '{"key1":"value1","key2":"value2"}'
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+    for key in ["commentor_user_id", "place_id","feedback", "rating"]:
+        if key not in data:
+            abort(400, "Missing {}".format(key))
+
+    try:
+        r = Reviews(commentor_user_id=data["commentor_user_id"],
+                    place_id=data["place_id"],
+                    feedback=data["feedback"],
+                    rating=data["rating"])
+    except ValueError as exc:
+        return repr(exc) + "\n"
+
+    # add new amenity data to amenity_data
+    # note that the created_at and updated_at are using timestamps
+    review_data[r.id] = {
+        "id": r.id,
+        "commentor_user_id": r.commentor_user_id,
+        "place_id": r.place_id,
+        "feedback": r.feedback,
+        "rating": r.rating,
+        "created_at": r.created_at,
+        "updated_at": r.updated_at
+    }
+
+    # note that the created_at and updated_at are using readable datetimes
+    attribs = {
+        "id": r.id,
+        "commentor_user_id": r.commentor_user_id,
+        "place_id": r.place_id,
+        "feedback": r.feedback,
+        "rating": r.rating,
+        "created_at": datetime.fromtimestamp(r.created_at),
+        "updated_at": datetime.fromtimestamp(r.updated_at)
+    }
+
+    return jsonify(attribs)
+
+@app.route('/api/v1/reviews/<review_id>', methods=["PUT"])
+def reviews_put(review_id):
+    """ updates existing review data using specified id """
+    # -- Usage example --
+    # curl -X PUT [URL] /
+    #    -H "Content-Type: application/json" /
+    #    -d '{"key1":"value1","key2":"value2"}'
+
+    r = {}
+
+    if request.get_json() is None:
+        abort(400, "Not a JSON")
+
+    data = request.get_json()
+
+    for k, v in review_data.items():
+        if v['id'] == review_id:
+            r = v
+
+    if not r:
+        abort(400, "Review not found for id {}".format(review_id))
+
+    # modify the values
+    # only review name is allowed to be modified
+    for k, v in data.items():
+        if k in ["commentor_user_id", "place_id","feedback", "rating"]:
+            r[k] = v
+
+    # update review_data with the new name - print review_data out to confirm it if you want
+    review_data[review_id] = r
+
+    attribs = {
+        "id": r["id"],
+        "commentor_user_id": r["commentor_user_id"],
+        "place_id": r["place_id"],
+        "feedback": r["feedback"],
+        "rating": r["rating"],
+        "created_at": datetime.fromtimestamp(r["created_at"]),
+        "updated_at": datetime.fromtimestamp(r["updated_at"])
+    }
+
+    # print out the updated user details
+    return jsonify(attribs)
+
+
+
+
+
+
+
+
 
 # Set debug=True for the server to auto-reload when there are changes
 if __name__ == '__main__':
