@@ -227,13 +227,17 @@ def users_put(user_id):
 
     if user_id not in user_data:
         abort(400, "User not found for id {}".format(user_id))
+    if "email" in data:
+        for user in user_data:
+            if data['email'] == user_data[user]['email']:
+                abort(400, "Email must be unique")
 
     u = user_data[user_id]
 
     # modify the values
     for k, v in data.items():
-        # only first_name and last_name are allowed to be modified
-        if k in ["first_name", "last_name"]:
+        # only first_name, last_name, email and password are allowed to be modified
+        if k in ["first_name", "last_name", "email", "password"]:
             u[k] = v
 
     # update user_data with the new name - print user_data out to confirm it if you want
