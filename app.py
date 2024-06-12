@@ -167,8 +167,15 @@ def users_post():
         abort(400, "Not a JSON")
 
     data = request.get_json()
+    if 'first_name' not in data:
+        abort(400, "Missing first_name")
+    if 'last_name' not in data:
+        abort(400, "Missing last_name")
     if 'email' not in data:
         abort(400, "Missing email")
+    for user in user_data:
+        if data['email'] == user_data[user]['email']:
+            abort(400, "Email must be unique")
     if 'password' not in data:
         abort(400, "Missing password")
 
