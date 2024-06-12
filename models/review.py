@@ -18,7 +18,7 @@ class Reviews():
         self.__commentor_user_id = ""
         self.__place_id = ""
         self.__feedback = ""
-        self.__rating = 0.0
+        self.__rating = 1
 
         allowed_attributes = ["commentor_user_id", "place_id", "feedback", "rating"]
 
@@ -74,7 +74,7 @@ class Reviews():
 
     @rating.setter
     def rating(self, value):
-        if isinstance(value, float) and 0 <= value <= 5: # revise this
+        if isinstance(value, int) and 1 <= value <= 5:
             self.__rating = value
         else:
-            raise ValueError("Rating must be a float between 0 and 5: {}".format(value))
+            raise ValueError("Rating must be a int between 1.0 and 5.0: {}".format(value))

@@ -5,7 +5,7 @@
             "commentor_user_id": "0215a722-a3fc-4f08-9120-f8621147f2be",
             "place_id": "cee845de-c341-4f5a-a0c5-2ca1f4c327b2",
             "feedback": "The place stinks and the floor is dirty",
-            "rating": 0.35,
+            "rating": 2,
             "created_at": 1715575358.020767,
             "updated_at": 1715575358.020767
         },
@@ -14,7 +14,7 @@
             "commentor_user_id": "460897e2-5953-40ea-8773-00a2851a1ba8",
             "place_id": "a1a3d915-68c8-4771-9bf4-498b9ae62463",
             "feedback": "Very expensive",
-            "rating": 0.1,
+            "rating": 1,
             "created_at": 1715575358.020792,
             "updated_at": 1715575358.020792
         }

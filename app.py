@@ -101,7 +101,7 @@ def example_places_reviews():
 
         output[place_name].append({
             "review": row['feedback'],
-            "rating": str(row['rating'] * 5) + " / 5",
+            "rating": ' ' + '* ' * row['rating'],
             "reviewer": reviewer['first_name'] + " " + reviewer['last_name']
         })
 
