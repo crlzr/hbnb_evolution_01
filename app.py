@@ -184,6 +184,7 @@ def users_post():
         "first_name": u.first_name,
         "last_name": u.last_name,
         "email": u.email,
+        "password": u.password,
         "created_at": u.created_at,
         "updated_at": u.updated_at
     }
@@ -194,9 +195,13 @@ def users_post():
         "first_name": u.first_name,
         "last_name": u.last_name,
         "email": u.email,
+        "password": u.password,
         "created_at": datetime.fromtimestamp(u.created_at),
         "updated_at": datetime.fromtimestamp(u.updated_at)
     }
+
+    string_to_print = FileStorage().prettify_model_data("User", user_data)
+    FileStorage().save_model_data("data/user.json", string_to_print)
 
     return jsonify(attribs)
 
@@ -232,9 +237,13 @@ def users_put(user_id):
         "first_name": u["first_name"],
         "last_name": u["last_name"],
         "email": u["email"],
+        "password": u["password"],
         "created_at": datetime.fromtimestamp(u["created_at"]),
         "updated_at": datetime.fromtimestamp(u["updated_at"])
     }
+
+    string_to_print = FileStorage().prettify_model_data("User", user_data)
+    FileStorage().save_model_data("data/user.json", string_to_print)
 
     # print out the updated user details
     return jsonify(attribs)
@@ -357,6 +366,9 @@ def countries_put(country_code):
         "updated_at": datetime.fromtimestamp(c["updated_at"])
     }
 
+    string_to_print = FileStorage().prettify_model_data("Country", country_data)
+    FileStorage().save_model_data("data/country.json", string_to_print)
+
     # print out the updated user details
     return jsonify(attribs)
 
@@ -456,6 +468,9 @@ def cities_post():
         "updated_at": datetime.fromtimestamp(c.updated_at)
     }
 
+    string_to_print = FileStorage().prettify_model_data("City", city_data)
+    FileStorage().save_model_data("data/city.json", string_to_print)
+
     return jsonify(attribs)
 
 @app.route('/api/v1/cities/<city_id>', methods=["PUT"])
@@ -496,6 +511,9 @@ def cities_put(city_id):
         "created_at": datetime.fromtimestamp(c["created_at"]),
         "updated_at": datetime.fromtimestamp(c["updated_at"])
     }
+
+    string_to_print = FileStorage().prettify_model_data("City", city_data)
+    FileStorage().save_model_data("data/city.json", string_to_print)
 
     # print out the updated user details
     return jsonify(attribs)
@@ -568,6 +586,9 @@ def amenities_post():
         "updated_at": datetime.fromtimestamp(a.updated_at)
     }
 
+    string_to_print = FileStorage().prettify_model_data("Amenity", amenity_data)
+    FileStorage().save_model_data("data/amenity.json", string_to_print)
+
     return jsonify(attribs)
 
 @app.route('/api/v1/amenities/<amenity_id>', methods=["PUT"])
@@ -607,6 +628,9 @@ def amenity_put(amenity_id):
         "created_at": datetime.fromtimestamp(a["created_at"]),
         "updated_at": datetime.fromtimestamp(a["updated_at"])
     }
+
+    string_to_print = FileStorage().prettify_model_data("Amenity", amenity_data)
+    FileStorage().save_model_data("data/amenity.json", string_to_print)
 
     # print out the updated user details
     return jsonify(attribs)
@@ -731,6 +755,9 @@ def places_post():
         "updated_at": datetime.fromtimestamp(p.updated_at)
     }
 
+    string_to_print = FileStorage().prettify_model_data("Place", place_data)
+    FileStorage().save_model_data("data/place.json", string_to_print)
+
     return jsonify(attribs)
 
 @app.route('/api/v1/places/<place_id>', methods=["PUT"])
@@ -781,6 +808,9 @@ def places_put(place_id):
         "created_at": datetime.fromtimestamp(p['created_at']),
         "updated_at": datetime.fromtimestamp(p['updated_at'])
     }
+
+    string_to_print = FileStorage().prettify_model_data("Place", place_data)
+    FileStorage().save_model_data("data/place.json", string_to_print)
 
     # print out the updated user details
     return jsonify(attribs)
@@ -869,6 +899,9 @@ def reviews_post():
         "updated_at": datetime.fromtimestamp(r.updated_at)
     }
 
+    string_to_print = FileStorage().prettify_model_data("Review", review_data)
+    FileStorage().save_model_data("data/review.json", string_to_print)
+
     return jsonify(attribs)
 
 @app.route('/api/v1/reviews/<review_id>', methods=["PUT"])
@@ -911,6 +944,9 @@ def reviews_put(review_id):
         "created_at": datetime.fromtimestamp(r["created_at"]),
         "updated_at": datetime.fromtimestamp(r["updated_at"])
     }
+
+    string_to_print = FileStorage().prettify_model_data("Review", review_data)
+    FileStorage().save_model_data("data/review.json", string_to_print)
 
     # print out the updated user details
     return jsonify(attribs)
