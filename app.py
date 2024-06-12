@@ -9,6 +9,7 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Reviews
 from data import country_data, place_data, amenity_data, place_to_amenity_data, review_data, user_data, city_data
+from data.file_storage import FileStorage
 
 app = Flask(__name__)
 
@@ -22,7 +23,6 @@ def hello_world_post():
     """ Hello world endpoint for POST requests """
     # curl -X POST localhost:5000/
     return "hello world\n"
-
 
 # Examples
 @app.route('/example/country_data')
@@ -111,7 +111,6 @@ def example_places_reviews():
 # - the places within the countries
 # - which places are owned by which users
 # - names of the owners of places with toilets
-
 
 # --- API endpoints ---
 # --- USER ---
@@ -263,7 +262,7 @@ def countries_post():
     except ValueError as exc:
         return repr(exc) + "\n"
 
-    # add new user data to user_data
+    # add new country data to country_data
     # note that the created_at and updated_at are using timestamps
     country_data[c.id] = {
         "id": c.id,
@@ -281,6 +280,8 @@ def countries_post():
         "created_at": datetime.fromtimestamp(c.created_at),
         "updated_at": datetime.fromtimestamp(c.updated_at)
     }
+
+    FileStorage().save_model_data("data/country.json", country_data)
 
     return jsonify(attribs)
 
@@ -379,12 +380,6 @@ def countries_specific_cities_get(country_code):
             })
 
     return jsonify(data)
-
-# Create the rest of the endpoints for:
-#  - City
-#  - Amenity
-#  - Place
-#  - Review
 
 # --- CITIES ---
 @app.route('/api/v1/cities', methods=["GET"])
@@ -504,7 +499,6 @@ def cities_put(city_id):
     # print out the updated user details
     return jsonify(attribs)
 
-
 # --- AMENITIES ---
 @app.route('/api/v1/amenities', methods=["GET"])
 def amenities_get():
@@ -615,7 +609,6 @@ def amenity_put(amenity_id):
 
     # print out the updated user details
     return jsonify(attribs)
-
 
 # --- PLACES ---
 @app.route('/api/v1/places', methods=["GET"])
@@ -791,7 +784,6 @@ def places_put(place_id):
     # print out the updated user details
     return jsonify(attribs)
 
-
 # --- REVIEWS ---
 @app.route('/api/v1/reviews', methods=["GET"])
 def reviews_get():
@@ -921,14 +913,6 @@ def reviews_put(review_id):
 
     # print out the updated user details
     return jsonify(attribs)
-
-
-
-
-
-
-
-
 
 # Set debug=True for the server to auto-reload when there are changes
 if __name__ == '__main__':

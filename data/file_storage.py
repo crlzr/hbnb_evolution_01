@@ -76,3 +76,17 @@ class FileStorage():
                 grouped_data[place_id].append(amenity_id)
 
         return grouped_data
+
+    def save_model_data(self, filename, data):
+        '''
+        This function writes an object to a text file, using a JSON representation:
+
+        Args:
+            my_obj: the object
+            filename: the text file
+        '''
+        try:
+            with open(filename, "w") as file:
+                return file.write(json.dumps(data))
+        except Exception as e:
+            raise RuntimeError(f"Failed to save data to file '{filename}': {e}")
