@@ -274,8 +274,14 @@ def countries_post():
     data = request.get_json()
     if 'name' not in data:
         abort(400, "Missing name")
+    for country in country_data:
+        if data['name'] == country_data[country]['name']:
+            abort(400, "Name must be unique")
     if 'code' not in data:
         abort(400, "Missing country code")
+    for country in country_data:
+        if data['code'] == country_data[country]['code']:
+            abort(400, "Code must be unique")
 
     try:
         c = Country(name=data["name"],code=data["code"])
@@ -353,6 +359,12 @@ def countries_put(country_code):
         abort(400, "Not a JSON")
 
     data = request.get_json()
+
+    if "name" in data:
+        for country in country_data:
+            if data['name'] == country_data[country]['name']:
+                abort(400, "Name must be unique")
+
     for k, v in country_data.items():
         if v['code'] == country_code:
             c = v
