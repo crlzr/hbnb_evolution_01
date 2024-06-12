@@ -1,7 +1,7 @@
-
-![H](https://github.com/crlzr/hbnb_evolution_01/assets/158859905/5511f99d-ae40-43b8-aaa0-f504ba06d33a)
+![alt text](H.png)
 
 ## Description
+This is the first part of creating our very own web application, HBnb evolution, cloned after AirBnB using Python and Flask! In this repository, you'll find we designed, built and tested the API and handled file-based data storage. 
 
 #### Functionalities of this command interpreter:
 
@@ -23,9 +23,7 @@ This project is interpreted/tested on Ubuntu 14.04 LTS using python3 (version 3.
 ## API
 
 
-
-## Bugs
-
+## Tests
 
 
 ## Authors
