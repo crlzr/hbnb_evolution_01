@@ -239,6 +239,7 @@ def users_put(user_id):
         # only first_name, last_name, email and password are allowed to be modified
         if k in ["first_name", "last_name", "email", "password"]:
             u[k] = v
+    u["updated_at"] = datetime.now().timestamp()
 
     # update user_data with the new name - print user_data out to confirm it if you want
     user_data[user_id] = u
@@ -377,6 +378,7 @@ def countries_put(country_code):
     for k, v in data.items():
         if k in ["name"]:
             c[k] = v
+    c["updated_at"] = datetime.now().timestamp()
 
     # update country_data with the new name - print country_data out to confirm it if you want
     country_data[c['id']] = c
@@ -523,6 +525,7 @@ def cities_put(city_id):
     for k, v in data.items():
         if k in ["name", "country_id"]:
             c[k] = v
+    c["updated_at"] = datetime.now().timestamp()
 
     # update city_data with the new name - print city_data out to confirm it if you want
     city_data[city_id] = c
@@ -641,6 +644,7 @@ def amenity_put(amenity_id):
     for k, v in data.items():
         if k in ["name"]:
             a[k] = v
+    a["updated_at"] = datetime.now().timestamp()
 
     # update amenity_data with the new name - print amenity_data out to confirm it if you want
     amenity_data[amenity_id] = a
@@ -812,6 +816,7 @@ def places_put(place_id):
                 "latitude", "longitude", "number_of_rooms", "bathrooms",
                 "price_per_night", "max_guests"]:
             p[k] = v
+    p["updated_at"] = datetime.now().timestamp()
 
     # update place_data with the new name - print place_data out to confirm it if you want
     place_data[place_id] = p
@@ -954,6 +959,7 @@ def reviews_put(review_id):
     for k, v in data.items():
         if k in ["commentor_user_id", "place_id","feedback", "rating"]:
             r[k] = v
+    r["updated_at"] = datetime.now().timestamp()
 
     # update review_data with the new name - print review_data out to confirm it if you want
     review_data[review_id] = r
