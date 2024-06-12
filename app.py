@@ -260,6 +260,36 @@ def users_put(user_id):
     # print out the updated user details
     return jsonify(attribs)
 
+@app.route('/api/v1/users/<user_id>', methods=["DELETE"])
+def users_delete(user_id):
+    """ deletes existing user data using specified id """
+    # -- Usage example --
+    # curl -X DELETE [URL] /
+    #    -H "Content-Type: application/json"
+
+    if user_id not in user_data:
+        abort(400, "User not found for id {}".format(user_id))
+
+    user_data.pop(user_id, None)
+
+    string_to_print = FileStorage().prettify_model_data("User", user_data)
+    FileStorage().save_model_data("data/user.json", string_to_print)
+
+    data = []
+
+    for k, v in user_data.items():
+        data.append({
+            "id": v['id'],
+            "first_name": v['first_name'],
+            "last_name": v['last_name'],
+            "email": v['email'],
+            "password": v['password'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
 # --- COUNTRY ---
 @app.route('/api/v1/countries', methods=["POST"])
 def countries_post():
@@ -544,6 +574,34 @@ def cities_put(city_id):
     # print out the updated user details
     return jsonify(attribs)
 
+@app.route('/api/v1/cities/<city_id>', methods=["DELETE"])
+def cities_delete(city_id):
+    """ deletes existing cities data using specified id """
+    # -- Usage example --
+    # curl -X DELETE [URL] /
+    #    -H "Content-Type: application/json"
+
+    if city_id not in city_data:
+        abort(400, "City not found for id {}".format(city_id))
+
+    city_data.pop(city_id, None)
+
+    string_to_print = FileStorage().prettify_model_data("City", city_data)
+    FileStorage().save_model_data("data/city.json", string_to_print)
+
+    data = []
+
+    for k, v in city_data.items():
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "country_id": v['country_id'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
 # --- AMENITIES ---
 @app.route('/api/v1/amenities', methods=["GET"])
 def amenities_get():
@@ -662,6 +720,33 @@ def amenity_put(amenity_id):
     # print out the updated user details
     return jsonify(attribs)
 
+@app.route('/api/v1/amenities/<amenity_id>', methods=["DELETE"])
+def amenity_delete(amenity_id):
+    """ deletes existing amenities data using specified id """
+    # -- Usage example --
+    # curl -X DELETE [URL] /
+    #    -H "Content-Type: application/json"
+
+    if amenity_id not in amenity_data:
+        abort(400, "Amenity not found for id {}".format(amenity_id))
+
+    amenity_data.pop(amenity_id, None)
+
+    string_to_print = FileStorage().prettify_model_data("Amenity", amenity_data)
+    FileStorage().save_model_data("data/amenity.json", string_to_print)
+
+    data = []
+
+    for k, v in amenity_data.items():
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
 # --- PLACES ---
 @app.route('/api/v1/places', methods=["GET"])
 def places_get():
@@ -685,6 +770,7 @@ def places_get():
             "created_at": datetime.fromtimestamp(v['created_at']),
             "updated_at": datetime.fromtimestamp(v['updated_at'])
         })
+
     return jsonify(data)
 
 @app.route('/api/v1/places/<place_id>', methods=["GET"])
@@ -843,6 +929,43 @@ def places_put(place_id):
     # print out the updated user details
     return jsonify(attribs)
 
+@app.route('/api/v1/places/<place_id>', methods=["DELETE"])
+def places_delete(place_id):
+    """ deletes existing places data using specified id """
+    # -- Usage example --
+    # curl -X DELETE [URL] /
+    #    -H "Content-Type: application/json"
+
+    if place_id not in place_data:
+        abort(400, "Place not found for id {}".format(place_id))
+
+    place_data.pop(place_id, None)
+
+    string_to_print = FileStorage().prettify_model_data("Place", place_data)
+    FileStorage().save_model_data("data/place.json", string_to_print)
+
+    data = []
+
+    for k, v in place_data.items():
+        data.append({
+            "id": v['id'],
+            "host_user_id": v['host_user_id'],
+            "city_id": v['city_id'],
+            "name": v['name'],
+            "description": v['description'],
+            "address": v['address'],
+            "latitude": v['latitude'],
+            "longitude": v['longitude'],
+            "number_of_rooms": v['number_of_rooms'],
+            "bathrooms": v['bathrooms'],
+            "price_per_night": v['price_per_night'],
+            "max_guests": v['max_guests'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
 # --- REVIEWS ---
 @app.route('/api/v1/reviews', methods=["GET"])
 def reviews_get():
@@ -979,6 +1102,36 @@ def reviews_put(review_id):
 
     # print out the updated user details
     return jsonify(attribs)
+
+@app.route('/api/v1/reviews/<review_id>', methods=["DELETE"])
+def reviews_delete(review_id):
+    """ deletes existing reviews data using specified id """
+    # -- Usage example --
+    # curl -X DELETE [URL] /
+    #    -H "Content-Type: application/json"
+
+    if review_id not in review_data:
+        abort(400, "Review not found for id {}".format(review_id))
+
+    review_data.pop(review_id, None)
+
+    string_to_print = FileStorage().prettify_model_data("Review", review_data)
+    FileStorage().save_model_data("data/review.json", string_to_print)
+
+    data = []
+
+    for k, v in review_data.items():
+        data.append({
+            "id": v['id'],
+            "commentor_user_id": v['commentor_user_id'],
+            "place_id": v['place_id'],
+            "feedback": v['feedback'],
+            "rating": v['rating'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
 
 # Set debug=True for the server to auto-reload when there are changes
 if __name__ == '__main__':
