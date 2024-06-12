@@ -281,7 +281,8 @@ def countries_post():
         "updated_at": datetime.fromtimestamp(c.updated_at)
     }
 
-    FileStorage().save_model_data("data/country.json", country_data)
+    string_to_print = FileStorage().prettify_model_data("Country", country_data)
+    FileStorage().save_model_data("data/country.json", string_to_print)
 
     return jsonify(attribs)
 

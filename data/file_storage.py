@@ -82,11 +82,25 @@ class FileStorage():
         This function writes an object to a text file, using a JSON representation:
 
         Args:
-            my_obj: the object
             filename: the text file
+            data: the data to be written
         '''
         try:
             with open(filename, "w") as file:
-                return file.write(json.dumps(data))
+                return file.write(data)
         except Exception as e:
             raise RuntimeError(f"Failed to save data to file '{filename}': {e}")
+
+    def prettify_model_data(self, model, data):
+        '''
+        This function makes data pretty so that it can be printed:
+
+        Args:
+            model: the model to be prettified
+            data: the data to be prettified
+        '''
+        new_list = []
+        for key in data:
+            new_list.append(data[key])
+        new_dict = {model: new_list}
+        return json.dumps(new_dict, indent=4)
