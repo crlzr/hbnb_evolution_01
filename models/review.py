@@ -33,7 +33,7 @@ class Reviews():
     def commentor_user_id(self):
         """Getter for private commentor user id"""
         return self.__commentor_user_id
-    
+
     @commentor_user_id.setter
     def commentor_user_id(self, value):
     # ensure that the specified commentor_user id actually exists before setting
@@ -41,7 +41,7 @@ class Reviews():
             self.__commentor_user_id = value
         else:
             raise ValueError("Invalid commentor_user_id specified: {}".format(value))
-    
+
     @property
     def place_id(self):
         """Getter for private place id"""
@@ -58,7 +58,7 @@ class Reviews():
     @property
     def feedback(self):
         """Getter for private feedback"""
-        return self.__feedback 
+        return self.__feedback
 
     @feedback.setter
     def feedback(self, value):
@@ -74,7 +74,10 @@ class Reviews():
 
     @rating.setter
     def rating(self, value):
-        if isinstance(value, int) and 1 <= value <= 5:
-            self.__rating = value
-        else:
-            raise ValueError("Rating must be a int between 1.0 and 5.0: {}".format(value))
+        if not isinstance(value, int):
+            raise TypeError("Rating must be an int between 1.0 and 5.0: {}".format(value))
+        if value < 1 or value > 5:
+            raise ValueError("Rating must be an int between 1.0 and 5.0: {}".format(value))
+
+        self.__rating = value
+
