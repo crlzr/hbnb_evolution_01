@@ -290,7 +290,63 @@ def users_delete(user_id):
 
     return jsonify(data)
 
+
 # --- COUNTRY ---
+@app.route('/api/v1/countries', methods=["GET"])
+def countries_get():
+    """ returns countires data """
+    data = []
+
+    for k, v in country_data.items():
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "code": v['code'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
+@app.route('/api/v1/countries/<country_code>', methods=["GET"])
+def countries_specific_get(country_code):
+    """ returns specific country data """
+    for k, v in country_data.items():
+        if v['code'] == country_code:
+            data = v
+
+    c = {
+        "id": data['id'],
+        "name": data['name'],
+        "code": data['code'],
+        "created_at": datetime.fromtimestamp(data['created_at']),
+        "updated_at": datetime.fromtimestamp(data['updated_at'])
+    }
+
+    return jsonify(c)
+
+@app.route('/api/v1/countries/<country_code>/cities', methods=["GET"])
+def countries_specific_cities_get(country_code):
+    """ returns cities data of specified country """
+    data = []
+    wanted_country_id = ""
+
+    for k, v in country_data.items():
+        if v['code'] == country_code:
+            wanted_country_id = v['id']
+
+    for k, v in city_data.items():
+        if v['country_id'] == wanted_country_id:
+            data.append({
+                "id": v['id'],
+                "name": v['name'],
+                "country_id": v['country_id'],
+                "created_at": datetime.fromtimestamp(v['created_at']),
+                "updated_at": datetime.fromtimestamp(v['updated_at'])
+            })
+
+    return jsonify(data)
+
 @app.route('/api/v1/countries', methods=["POST"])
 def countries_post():
     """ posts data for new country then returns the country data"""
@@ -343,39 +399,6 @@ def countries_post():
 
     return jsonify(attribs)
 
-@app.route('/api/v1/countries', methods=["GET"])
-def countries_get():
-    """ returns countires data """
-    data = []
-
-    for k, v in country_data.items():
-        data.append({
-            "id": v['id'],
-            "name": v['name'],
-            "code": v['code'],
-            "created_at": datetime.fromtimestamp(v['created_at']),
-            "updated_at": datetime.fromtimestamp(v['updated_at'])
-        })
-
-    return jsonify(data)
-
-@app.route('/api/v1/countries/<country_code>', methods=["GET"])
-def countries_specific_get(country_code):
-    """ returns specific country data """
-    for k, v in country_data.items():
-        if v['code'] == country_code:
-            data = v
-
-    c = {
-        "id": data['id'],
-        "name": data['name'],
-        "code": data['code'],
-        "created_at": datetime.fromtimestamp(data['created_at']),
-        "updated_at": datetime.fromtimestamp(data['updated_at'])
-    }
-
-    return jsonify(c)
-
 @app.route('/api/v1/countries/<country_code>', methods=["PUT"])
 def countries_put(country_code):
     """ updates existing user data using specified id """
@@ -427,27 +450,6 @@ def countries_put(country_code):
     # print out the updated user details
     return jsonify(attribs)
 
-@app.route('/api/v1/countries/<country_code>/cities', methods=["GET"])
-def countries_specific_cities_get(country_code):
-    """ returns cities data of specified country """
-    data = []
-    wanted_country_id = ""
-
-    for k, v in country_data.items():
-        if v['code'] == country_code:
-            wanted_country_id = v['id']
-
-    for k, v in city_data.items():
-        if v['country_id'] == wanted_country_id:
-            data.append({
-                "id": v['id'],
-                "name": v['name'],
-                "country_id": v['country_id'],
-                "created_at": datetime.fromtimestamp(v['created_at']),
-                "updated_at": datetime.fromtimestamp(v['updated_at'])
-            })
-
-    return jsonify(data)
 
 # --- CITIES ---
 @app.route('/api/v1/cities', methods=["GET"])
@@ -602,6 +604,7 @@ def cities_delete(city_id):
 
     return jsonify(data)
 
+
 # --- AMENITIES ---
 @app.route('/api/v1/amenities', methods=["GET"])
 def amenities_get():
@@ -746,6 +749,7 @@ def amenity_delete(amenity_id):
         })
 
     return jsonify(data)
+
 
 # --- PLACES ---
 @app.route('/api/v1/places', methods=["GET"])
@@ -965,6 +969,7 @@ def places_delete(place_id):
         })
 
     return jsonify(data)
+
 
 # --- REVIEWS ---
 @app.route('/api/v1/reviews', methods=["GET"])
