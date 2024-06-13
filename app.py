@@ -452,6 +452,33 @@ def countries_put(country_id):
     # print out the updated user details
     return jsonify(attribs)
 
+@app.route('/api/v1/countries/<country_id>', methods=["DELETE"])
+def countries_delete(country_id):
+    """ deletes existing countries data using specified id """
+    # -- Usage example --
+    # curl -X DELETE [URL] /
+    #    -H "Content-Type: application/json"
+
+    if country_id not in country_data:
+        abort(400, "Country not found for id {}".format(country_id))
+
+    country_data.pop(country_id, None)
+
+    string_to_print = FileStorage().prettify_model_data("Country", country_data)
+    FileStorage().save_model_data("data/country.json", string_to_print)
+
+    data = []
+
+    for k, v in country_data.items():
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "code": v['code'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
 
 # --- CITIES ---
 @app.route('/api/v1/cities', methods=["GET"])
