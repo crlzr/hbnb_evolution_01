@@ -270,6 +270,19 @@ def users_delete(user_id):
     if user_id not in user_data:
         abort(400, "User not found for id {}".format(user_id))
 
+    # This is to remove the review when the user is being deleted
+    reviews_to_delete = []
+    for k, v in review_data.items():
+        if v["commentor_user_id"] == user_id:
+            reviews_to_delete.append(k)
+
+    for k in reviews_to_delete:
+        review_data.pop(k, None)
+
+    string_to_print = FileStorage().prettify_model_data("Review", review_data)
+    FileStorage().save_model_data("data/review.json", string_to_print)
+
+    # Now delete the user from the data list (json)
     user_data.pop(user_id, None)
 
     string_to_print = FileStorage().prettify_model_data("User", user_data)
