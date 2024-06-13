@@ -96,7 +96,7 @@ def example_places_reviews():
         place_name = place_data[place_id]['name']
         if place_name not in output:
             output[place_name] = []
-        
+
         reviewer = user_data[row['commentor_user_id']]
 
         output[place_name].append({
@@ -308,11 +308,11 @@ def countries_get():
 
     return jsonify(data)
 
-@app.route('/api/v1/countries/<country_code>', methods=["GET"])
-def countries_specific_get(country_code):
+@app.route('/api/v1/countries/<country_id>', methods=["GET"])
+def countries_specific_get(country_id):
     """ returns specific country data """
     for k, v in country_data.items():
-        if v['code'] == country_code:
+        if v['id'] == country_id:
             data = v
 
     c = {
@@ -325,18 +325,14 @@ def countries_specific_get(country_code):
 
     return jsonify(c)
 
-@app.route('/api/v1/countries/<country_code>/cities', methods=["GET"])
-def countries_specific_cities_get(country_code):
+@app.route('/api/v1/countries/<country_id>/cities', methods=["GET"])
+def countries_specific_cities_get(country_id):
     """ returns cities data of specified country """
-    data = []
-    wanted_country_id = ""
 
-    for k, v in country_data.items():
-        if v['code'] == country_code:
-            wanted_country_id = v['id']
+    data = []
 
     for k, v in city_data.items():
-        if v['country_id'] == wanted_country_id:
+        if v['country_id'] == country_id:
             data.append({
                 "id": v['id'],
                 "name": v['name'],
@@ -399,8 +395,8 @@ def countries_post():
 
     return jsonify(attribs)
 
-@app.route('/api/v1/countries/<country_code>', methods=["PUT"])
-def countries_put(country_code):
+@app.route('/api/v1/countries/<country_id>', methods=["PUT"])
+def countries_put(country_id):
     """ updates existing user data using specified id """
     # -- Usage example --
     # curl -X PUT [URL] /
@@ -419,17 +415,23 @@ def countries_put(country_code):
             if data['name'] == country_data[country]['name']:
                 abort(400, "Name must be unique")
 
+    if "code" in data:
+        for country in country_data:
+            if data['code'] == country_data[country]['code']:
+                abort(400, "Code must be unique")
+
+
     for k, v in country_data.items():
-        if v['code'] == country_code:
+        if v['id'] == country_id:
             c = v
 
     if not c:
-        abort(400, "Country not found for code {}".format(country_code))
+        abort(400, "Country not found for id {}".format(country_id))
 
     # modify the values
-    # only name is allowed to be modified
+    # only name and code are allowed to be modified
     for k, v in data.items():
-        if k in ["name"]:
+        if k in ["name", "code"]:
             c[k] = v
     c["updated_at"] = datetime.now().timestamp()
 
