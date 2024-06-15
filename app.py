@@ -96,7 +96,7 @@ def example_places_reviews():
         place_name = place_data[place_id]['name']
         if place_name not in output:
             output[place_name] = []
-        
+
         reviewer = user_data[row['commentor_user_id']]
 
         output[place_name].append({
@@ -270,6 +270,25 @@ def users_delete(user_id):
     if user_id not in user_data:
         abort(400, "User not found for id {}".format(user_id))
 
+    # This is to remove the review when the user is being deleted
+    reviews_to_delete = []
+    for k, v in review_data.items():
+        if v["commentor_user_id"] == user_id:
+            reviews_to_delete.append(k)
+
+    for k in reviews_to_delete:
+        reviews_delete(k)
+
+    # This is to remove the place when the user is being deleted
+    places_to_delete = []
+    for k, v in place_data.items():
+        if v["host_user_id"] == user_id:
+            places_to_delete.append(k)
+
+    for k in places_to_delete:
+        places_delete(k)
+
+    # Now delete the user from the data list (json)
     user_data.pop(user_id, None)
 
     string_to_print = FileStorage().prettify_model_data("User", user_data)
@@ -290,7 +309,59 @@ def users_delete(user_id):
 
     return jsonify(data)
 
+
 # --- COUNTRY ---
+@app.route('/api/v1/countries', methods=["GET"])
+def countries_get():
+    """ returns countires data """
+    data = []
+
+    for k, v in country_data.items():
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "code": v['code'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
+
+    return jsonify(data)
+
+@app.route('/api/v1/countries/<country_id>', methods=["GET"])
+def countries_specific_get(country_id):
+    """ returns specific country data """
+    for k, v in country_data.items():
+        if v['id'] == country_id:
+            data = v
+
+    c = {
+        "id": data['id'],
+        "name": data['name'],
+        "code": data['code'],
+        "created_at": datetime.fromtimestamp(data['created_at']),
+        "updated_at": datetime.fromtimestamp(data['updated_at'])
+    }
+
+    return jsonify(c)
+
+@app.route('/api/v1/countries/<country_id>/cities', methods=["GET"])
+def countries_specific_cities_get(country_id):
+    """ returns cities data of specified country """
+
+    data = []
+
+    for k, v in city_data.items():
+        if v['country_id'] == country_id:
+            data.append({
+                "id": v['id'],
+                "name": v['name'],
+                "country_id": v['country_id'],
+                "created_at": datetime.fromtimestamp(v['created_at']),
+                "updated_at": datetime.fromtimestamp(v['updated_at'])
+            })
+
+    return jsonify(data)
+
 @app.route('/api/v1/countries', methods=["POST"])
 def countries_post():
     """ posts data for new country then returns the country data"""
@@ -343,41 +414,8 @@ def countries_post():
 
     return jsonify(attribs)
 
-@app.route('/api/v1/countries', methods=["GET"])
-def countries_get():
-    """ returns countires data """
-    data = []
-
-    for k, v in country_data.items():
-        data.append({
-            "id": v['id'],
-            "name": v['name'],
-            "code": v['code'],
-            "created_at": datetime.fromtimestamp(v['created_at']),
-            "updated_at": datetime.fromtimestamp(v['updated_at'])
-        })
-
-    return jsonify(data)
-
-@app.route('/api/v1/countries/<country_code>', methods=["GET"])
-def countries_specific_get(country_code):
-    """ returns specific country data """
-    for k, v in country_data.items():
-        if v['code'] == country_code:
-            data = v
-
-    c = {
-        "id": data['id'],
-        "name": data['name'],
-        "code": data['code'],
-        "created_at": datetime.fromtimestamp(data['created_at']),
-        "updated_at": datetime.fromtimestamp(data['updated_at'])
-    }
-
-    return jsonify(c)
-
-@app.route('/api/v1/countries/<country_code>', methods=["PUT"])
-def countries_put(country_code):
+@app.route('/api/v1/countries/<country_id>', methods=["PUT"])
+def countries_put(country_id):
     """ updates existing user data using specified id """
     # -- Usage example --
     # curl -X PUT [URL] /
@@ -396,17 +434,23 @@ def countries_put(country_code):
             if data['name'] == country_data[country]['name']:
                 abort(400, "Name must be unique")
 
+    if "code" in data:
+        for country in country_data:
+            if data['code'] == country_data[country]['code']:
+                abort(400, "Code must be unique")
+
+
     for k, v in country_data.items():
-        if v['code'] == country_code:
+        if v['id'] == country_id:
             c = v
 
     if not c:
-        abort(400, "Country not found for code {}".format(country_code))
+        abort(400, "Country not found for id {}".format(country_id))
 
     # modify the values
-    # only name is allowed to be modified
+    # only name and code are allowed to be modified
     for k, v in data.items():
-        if k in ["name"]:
+        if k in ["name", "code"]:
             c[k] = v
     c["updated_at"] = datetime.now().timestamp()
 
@@ -427,25 +471,31 @@ def countries_put(country_code):
     # print out the updated user details
     return jsonify(attribs)
 
-@app.route('/api/v1/countries/<country_code>/cities', methods=["GET"])
-def countries_specific_cities_get(country_code):
-    """ returns cities data of specified country """
+@app.route('/api/v1/countries/<country_id>', methods=["DELETE"])
+def countries_delete(country_id):
+    """ deletes existing countries data using specified id """
+    # -- Usage example --
+    # curl -X DELETE [URL] /
+    #    -H "Content-Type: application/json"
+
+    if country_id not in country_data:
+        abort(400, "Country not found for id {}".format(country_id))
+
+    country_data.pop(country_id, None)
+
+    string_to_print = FileStorage().prettify_model_data("Country", country_data)
+    FileStorage().save_model_data("data/country.json", string_to_print)
+
     data = []
-    wanted_country_id = ""
 
     for k, v in country_data.items():
-        if v['code'] == country_code:
-            wanted_country_id = v['id']
-
-    for k, v in city_data.items():
-        if v['country_id'] == wanted_country_id:
-            data.append({
-                "id": v['id'],
-                "name": v['name'],
-                "country_id": v['country_id'],
-                "created_at": datetime.fromtimestamp(v['created_at']),
-                "updated_at": datetime.fromtimestamp(v['updated_at'])
-            })
+        data.append({
+            "id": v['id'],
+            "name": v['name'],
+            "code": v['code'],
+            "created_at": datetime.fromtimestamp(v['created_at']),
+            "updated_at": datetime.fromtimestamp(v['updated_at'])
+        })
 
     return jsonify(data)
 
@@ -602,6 +652,7 @@ def cities_delete(city_id):
 
     return jsonify(data)
 
+
 # --- AMENITIES ---
 @app.route('/api/v1/amenities', methods=["GET"])
 def amenities_get():
@@ -647,6 +698,10 @@ def amenities_post():
     data = request.get_json()
     if 'name' not in data:
         abort(400, "Missing name")
+   # Amenity must be unique 
+    for amenity in amenity_data:
+        if data['name'] == amenity_data[amenity]['name']:
+            abort(400, "Amenity must be unique")
 
     try:
         a = Amenity(name=data["name"])
@@ -746,6 +801,7 @@ def amenity_delete(amenity_id):
         })
 
     return jsonify(data)
+
 
 # --- PLACES ---
 @app.route('/api/v1/places', methods=["GET"])
@@ -939,6 +995,16 @@ def places_delete(place_id):
     if place_id not in place_data:
         abort(400, "Place not found for id {}".format(place_id))
 
+    # This is to remove the review when the place is being deleted
+    reviews_to_delete = []
+    for k, v in review_data.items():
+        if v["place_id"] == place_id:
+            reviews_to_delete.append(k)
+
+    for k in reviews_to_delete:
+        reviews_delete(k)
+
+    # Now delete the place from the data list (json)
     place_data.pop(place_id, None)
 
     string_to_print = FileStorage().prettify_model_data("Place", place_data)
@@ -965,6 +1031,7 @@ def places_delete(place_id):
         })
 
     return jsonify(data)
+
 
 # --- REVIEWS ---
 @app.route('/api/v1/reviews', methods=["GET"])
@@ -1015,6 +1082,7 @@ def reviews_post():
         abort(400, "Not a JSON")
 
     data = request.get_json()
+
     for key in ["commentor_user_id", "place_id","feedback", "rating"]:
         if key not in data:
             abort(400, "Missing {}".format(key))
