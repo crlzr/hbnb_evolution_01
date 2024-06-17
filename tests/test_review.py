@@ -24,16 +24,11 @@ class TestReview(unittest.TestCase):
         """
         Tests if feedback is not string
         """
-        test_error = ""
-        try:
+        with self.assertRaises(TypeError):
             Reviews(commentor_user_id="0215a722-a3fc-4f08-9120-f8621147f2be",
                     place_id="cee845de-c341-4f5a-a0c5-2ca1f4c327b2",
                     feedback=999999999,
                     rating=4)
-        except Exception as e:
-            test_error = e
-
-        self.assertIsInstance(test_error, TypeError)
 
     def test_rating_not_int(self):
         """
