@@ -277,10 +277,16 @@ def users_delete(user_id):
             reviews_to_delete.append(k)
 
     for k in reviews_to_delete:
-        review_data.pop(k, None)
+        reviews_delete(k)
 
-    string_to_print = FileStorage().prettify_model_data("Review", review_data)
-    FileStorage().save_model_data("data/review.json", string_to_print)
+    # This is to remove the place when the user is being deleted
+    places_to_delete = []
+    for k, v in place_data.items():
+        if v["host_user_id"] == user_id:
+            places_to_delete.append(k)
+
+    for k in places_to_delete:
+        places_delete(k)
 
     # Now delete the user from the data list (json)
     user_data.pop(user_id, None)
@@ -692,6 +698,10 @@ def amenities_post():
     data = request.get_json()
     if 'name' not in data:
         abort(400, "Missing name")
+   # Amenity must be unique 
+    for amenity in amenity_data:
+        if data['name'] == amenity_data[amenity]['name']:
+            abort(400, "Amenity must be unique")
 
     try:
         a = Amenity(name=data["name"])
@@ -985,6 +995,16 @@ def places_delete(place_id):
     if place_id not in place_data:
         abort(400, "Place not found for id {}".format(place_id))
 
+    # This is to remove the review when the place is being deleted
+    reviews_to_delete = []
+    for k, v in review_data.items():
+        if v["place_id"] == place_id:
+            reviews_to_delete.append(k)
+
+    for k in reviews_to_delete:
+        reviews_delete(k)
+
+    # Now delete the place from the data list (json)
     place_data.pop(place_id, None)
 
     string_to_print = FileStorage().prettify_model_data("Place", place_data)
@@ -1062,6 +1082,7 @@ def reviews_post():
         abort(400, "Not a JSON")
 
     data = request.get_json()
+
     for key in ["commentor_user_id", "place_id","feedback", "rating"]:
         if key not in data:
             abort(400, "Missing {}".format(key))

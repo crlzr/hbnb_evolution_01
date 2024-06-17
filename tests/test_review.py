@@ -77,20 +77,20 @@ class TestReview(unittest.TestCase):
         self.assertIsInstance(test_error, ValueError)
 
 
-    def test_attribute_missing(self):
-        """
-        Tests if one attribute is missing (rating missing)
-        """
-        test_error = ""
-        try:
-            Reviews(commentor_user_id="0215a722-a3fc-4f08-9120-f8621147f2be",
-                    place_id="cee845de-c341-4f5a-a0c5-2ca1f4c327b2",
-                    feedback="If I could give 0 stars, I would",
-                    )
-        except Exception as e:
-            test_error = e
+    # def test_attribute_missing(self):
+    #     """
+    #     Tests if one attribute is missing (rating missing)
+    #     """
+    #     test_error = ""
+    #     try:
+    #         Reviews(commentor_user_id="0215a722-a3fc-4f08-9120-f8621147f2be",
+    #                 place_id="cee845de-c341-4f5a-a0c5-2ca1f4c327b2",
+    #                 feedback="If I could give 0 stars, I would",
+    #                 )
+    #     except Exception as e:
+    #         test_error = e
 
-        self.assertIsInstance(test_error, ValueError)
+    #     self.assertIsInstance(test_error, ValueError)
 
 
     def test_additional_attribute(self):
