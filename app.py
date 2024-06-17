@@ -107,11 +107,6 @@ def example_places_reviews():
 
     return jsonify(output)
 
-# Consider adding other test routes to display data for:
-# - the places within the countries
-# - which places are owned by which users
-# - names of the owners of places with toilets
-
 # --- API endpoints ---
 # --- USER ---
 @app.route('/api/v1/users', methods=["GET"])
